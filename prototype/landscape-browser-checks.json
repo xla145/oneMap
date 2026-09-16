@@ -1,0 +1,101 @@
+{
+  "checks": [
+    {
+      "width": 1440,
+      "topic": "overview",
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "topic": "landscape",
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "topic": "planning",
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "topic": "energy",
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "topic": "public",
+      "passed": true
+    },
+    {
+      "width": 1440,
+      "topic": "ecology",
+      "passed": true
+    },
+    {
+      "width": 1024,
+      "topic": "overview",
+      "passed": true
+    },
+    {
+      "width": 1024,
+      "topic": "landscape",
+      "passed": true
+    },
+    {
+      "width": 1024,
+      "topic": "planning",
+      "passed": true
+    },
+    {
+      "width": 1024,
+      "topic": "energy",
+      "passed": true
+    },
+    {
+      "width": 1024,
+      "topic": "public",
+      "passed": true
+    },
+    {
+      "width": 1024,
+      "topic": "ecology",
+      "passed": true
+    },
+    {
+      "width": 390,
+      "topic": "overview",
+      "passed": true
+    },
+    {
+      "width": 390,
+      "topic": "landscape",
+      "passed": true
+    },
+    {
+      "width": 390,
+      "topic": "planning",
+      "passed": true
+    },
+    {
+      "width": 390,
+      "topic": "energy",
+      "passed": true
+    },
+    {
+      "width": 390,
+      "topic": "public",
+      "passed": true
+    },
+    {
+      "width": 390,
+      "topic": "ecology",
+      "passed": true
+    },
+    {
+      "workflow": "draft isolation and publish",
+      "passed": true
+    }
+  ],
+  "browserErrors": {
+    "errors": []
+  }
+}

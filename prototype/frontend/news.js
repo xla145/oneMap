@@ -1,0 +1,27 @@
+import { previewSource } from './previews.js';
+export const newsCategories = ['政策法规', '行业动态', '技术标准', '培训资源'];
+export function newsCategory(record) {
+  const aliases = {'技术规范':'技术标准','数据字典':'技术标准','业务手册':'培训资源','案例经验':'培训资源'};
+  return aliases[record.category] || record.category || '其他资料';
+}
+export function searchNews(records, query='', category='全部') {
+  const terms=query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  return records.filter(r=>(category==='全部'||newsCategory(r)===category)&&terms.every(term=>[r.name,r.source,r.body,r.tags,newsCategory(r)].join(' ').toLowerCase().includes(term)))
+    .sort((a,b)=>String(b.updated||'').localeCompare(String(a.updated||''))||a.name.localeCompare(b.name));
+}
+export function recommendedNews(records, {category='全部',domain='',excludeId=''}={}) {
+  return searchNews(records).filter(r=>r.id!==excludeId).map(r=>({r,score:(category!=='全部'&&newsCategory(r)===category?2:0)+(domain&&[r.name,r.tags,r.body].join(' ').includes(domain)?1:0)})).sort((a,b)=>b.score-a.score).slice(0,3).map(x=>x.r);
+}
+export function newsDownloadText(record) {
+  return `${record.name}\n\n栏目：${newsCategory(record)}\n来源：${record.source||'未注明'}\n更新日期：${String(record.updated||'').slice(0,10)}\n版本：v${record.version||1}\n\n${record.body||''}\n`;
+}
+export function renderNews({records,query,category,page,domain,esc,icon,btn,empty}) {
+  const selected=searchNews(records,query,category),total=Math.max(1,Math.ceil(selected.length/8));
+  const current=Math.max(1,Math.min(page,total));
+  const categories=[...newsCategories,...new Set(records.map(newsCategory).filter(c=>!newsCategories.includes(c)))];
+  const descriptions={'政策法规':'政策解读 · 办事依据','行业动态':'业务观察 · 建设进展','技术标准':'技术规范 · 数据标准','培训资源':'操作指南 · 学习资料'};
+  const symbols=['shield','chart','file','book'];
+  const recommendations=recommendedNews(records,{category,domain});
+  const row=r=>`<article class="news-row"><button class="news-cover" data-action="portalKnowledge" data-id="${esc(r.id)}" aria-label="阅读${esc(r.name)}"><img data-preview src="${esc(previewSource({...r,type:newsCategory(r)==='行业动态'?'data':'知识文档'}))}" alt="${esc(newsCategory(r))}内容示意" loading="lazy"><span>${esc(newsCategory(r))}</span></button><div class="news-row-content"><h2><button data-action="portalKnowledge" data-id="${esc(r.id)}">${esc(r.name)}</button></h2><p>${esc((r.body||'').split(/\n\s*\n/)[0])}</p><div class="news-meta"><span>${esc(r.source||'未注明来源')}</span><time>${esc(String(r.updated||'').slice(0,10))}</time><span>v${r.version||1}</span></div><div class="news-row-bottom"><div class="chips">${String(r.tags||'').split(/[,，]/).filter(Boolean).slice(0,3).map(t=>`<span>${esc(t)}</span>`).join('')}</div><button class="btn text small" data-action="newsDownload" data-id="${esc(r.id)}">${icon('download')}下载正文</button></div></div></article>`;
+  return `<div class="page-heading"><div><h1>资讯下载</h1><p>关注行业动态，查阅政策标准，获取培训与业务资料。</p></div><span class="news-total">${records.length} 篇已发布内容</span></div><div class="news-categories">${newsCategories.map((c,i)=>`<button data-action="newsCategory" data-id="${c}" class="${category===c?'active':''}" aria-pressed="${category===c}"><span class="tile">${icon(symbols[i])}</span><span><strong>${c}</strong><small>${descriptions[c]}</small></span><b>${records.filter(r=>newsCategory(r)===c).length}</b></button>`).join('')}</div><div class="news-layout"><section class="news-main"><div class="news-toolbar"><div class="search-control">${icon('search')}<input id="list-search" aria-label="搜索资讯" placeholder="搜索标题、正文、发布单位或关键词" value="${esc(query)}"></div><select id="list-filter" aria-label="资讯栏目">${['全部',...categories].map(c=>`<option ${category===c?'selected':''}>${esc(c)}</option>`).join('')}</select>${btn('重置','newsReset','','small')}</div><div class="news-list-title"><h2>${category==='全部'?'最新资讯':esc(category)}</h2><span>共 ${selected.length} 篇 · 按更新时间排序</span></div><div class="news-list">${selected.slice((current-1)*8,current*8).map(row).join('')||empty('暂无符合条件的资讯','调整关键词或选择其他栏目。')}</div><div class="pagination"><span>共 ${selected.length} 篇</span><div><button class="btn small" data-action="prev" ${current===1?'disabled':''}>上一页</button><span>${current} / ${total}</span><button class="btn small" data-action="next" data-id="${total}" ${current===total?'disabled':''}>下一页</button></div></div></section><aside class="news-sidebar"><section><div class="news-aside-title">${icon('sparkles')}推荐阅读</div><p class="news-recommend-basis">${domain?`结合关注领域「${esc(domain)}」`:'优先推荐近期更新内容'}${category!=='全部'?'与当前栏目':''}</p>${recommendations.map((r,i)=>`<button class="news-recommend" data-action="portalKnowledge" data-id="${esc(r.id)}"><b>0${i+1}</b><span><strong>${esc(r.name)}</strong><small>${esc(newsCategory(r))} · ${esc(String(r.updated||'').slice(0,10))}</small></span></button>`).join('')||'<p class="muted">暂无推荐内容</p>'}</section><section><div class="news-aside-title">${icon('download')}资料下载</div><p class="news-recommend-basis">技术标准与培训资料 · TXT 正文</p>${searchNews(records).filter(r=>['技术标准','培训资源'].includes(newsCategory(r))).slice(0,4).map(r=>`<button class="news-download" data-action="newsDownload" data-id="${esc(r.id)}"><span>${esc(r.name)}</span>${icon('download')}</button>`).join('')||'<p class="muted">暂无可下载资料</p>'}</section><section class="news-help"><h3>需要进一步理解政策？</h3><p>向政策知识助手提问，结合原文查看解释与引用依据。</p>${btn('咨询政策助手','useAgent','a2','primary small','sparkles')}</section></aside></div>`;
+}

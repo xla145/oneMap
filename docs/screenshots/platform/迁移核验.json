@@ -1,0 +1,87 @@
+{
+  "resources": {
+    "before": 14,
+    "after": 14,
+    "changed_original_records": []
+  },
+  "knowledge": {
+    "before": 2,
+    "after": 2,
+    "changed_original_records": []
+  },
+  "indicators": {
+    "before": 6,
+    "after": 6,
+    "changed_original_records": []
+  },
+  "corpora": {
+    "before": 5,
+    "after": 5,
+    "changed_original_records": []
+  },
+  "agents": {
+    "before": 5,
+    "after": 5,
+    "changed_original_records": []
+  },
+  "templates": {
+    "before": 1,
+    "after": 1,
+    "changed_original_records": []
+  },
+  "dictionaries": {
+    "before": 1,
+    "after": 1,
+    "changed_original_records": []
+  },
+  "users": {
+    "before": 7,
+    "after": 7,
+    "changed_original_records": []
+  },
+  "memories": {
+    "before": 2,
+    "after": 2,
+    "changed_original_records": []
+  },
+  "sessions": {
+    "before": 11,
+    "after": 11,
+    "changed_original_records": []
+  },
+  "applications": {
+    "before": 1,
+    "after": 1,
+    "changed_original_records": []
+  },
+  "feedback": {
+    "before": 1,
+    "after": 1,
+    "changed_original_records": []
+  },
+  "calls": {
+    "before": 11,
+    "after": 11,
+    "changed_original_records": []
+  },
+  "audit": {
+    "before": 22,
+    "after": 22,
+    "changed_original_records": []
+  },
+  "batches": {
+    "before": 0,
+    "after": 0,
+    "changed_original_records": []
+  },
+  "evaluations": {
+    "before": 0,
+    "after": 0,
+    "changed_original_records": []
+  },
+  "feedbackDrafts": {
+    "before": 0,
+    "after": 0,
+    "changed_original_records": []
+  }
+}

@@ -1,0 +1,21 @@
+// Bundled locally by npm run build:map; browsers need no CDN connection.
+import 'ol/ol.css';
+export {default as Map} from 'ol/Map.js';
+export {default as View} from 'ol/View.js';
+export {default as Feature} from 'ol/Feature.js';
+export {default as GeoJSON} from 'ol/format/GeoJSON.js';
+export {default as Projection} from 'ol/proj/Projection.js';
+export {addProjection, addCoordinateTransforms, fromLonLat, toLonLat, transformExtent} from 'ol/proj.js';
+export {default as TileLayer} from 'ol/layer/Tile.js';
+export {default as XYZ} from 'ol/source/XYZ.js';
+export {default as VectorLayer} from 'ol/layer/Vector.js';
+export {default as VectorSource} from 'ol/source/Vector.js';
+export {default as Draw} from 'ol/interaction/Draw.js';
+export {default as Point} from 'ol/geom/Point.js';
+export {default as Polygon} from 'ol/geom/Polygon.js';
+export {default as Style} from 'ol/style/Style.js';
+export {default as Fill} from 'ol/style/Fill.js';
+export {default as Stroke} from 'ol/style/Stroke.js';
+export {default as CircleStyle} from 'ol/style/Circle.js';
+export {default as Text} from 'ol/style/Text.js';
+export {createBox} from 'ol/interaction/Draw.js';

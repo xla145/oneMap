@@ -1,0 +1,18 @@
+{
+  "checks": [
+    "conflict and clear parcels",
+    "three result exports",
+    "uploaded clear parcel",
+    "invalid geometry visible",
+    "compliance layout 1440",
+    "compliance layout 1024",
+    "compliance layout 390",
+    "overlay union returns real geometry",
+    "disjoint intersection empty",
+    "overlay mobile layout",
+    "no browser errors"
+  ],
+  "browserErrors": {
+    "errors": []
+  }
+}

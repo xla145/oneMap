@@ -1,0 +1,37 @@
+{
+  "priority": {
+    "delivered": [
+      "app.test:ordinary:1"
+    ],
+    "urgent_status": "待投递"
+  },
+  "subscription_overlap": {
+    "notifications": 2,
+    "same_recipient": [
+      "u1",
+      "u1"
+    ]
+  },
+  "task_recipient": {
+    "assignee": "reviewer",
+    "recipients": [
+      "u1",
+      "u1"
+    ]
+  },
+  "purpose_rule": "('规则变量不存在：purpose', 400)",
+  "parameter_rule": "('规则变量不存在：area_threshold', 400)",
+  "new_client": {
+    "has_key": true,
+    "has_secret_hash": false
+  },
+  "registration": {
+    "status": "已认证",
+    "users_added": 0
+  },
+  "gateway_timeout": {
+    "status": 504,
+    "fallback_attempted": false,
+    "other_upstream_enabled": true
+  }
+}

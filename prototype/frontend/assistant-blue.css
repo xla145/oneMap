@@ -1,0 +1,74 @@
+/* Keep the assistant palette in step with the public blue-and-white portal. */
+.portal-mode .chat-layout { border-color:#dce6f1; border-radius:10px; box-shadow:0 6px 24px #204e7810; }
+.portal-mode .session-panel { background:#f3f7fc; border-color:#dfe8f2; }
+.portal-mode .session-heading { color:#284f74; }
+.portal-mode .session-count { color:#4277a5; background:#e1edf8; }
+.portal-mode .session-actions .new-chat { background:#347fbd; border-color:#347fbd; box-shadow:0 3px 9px #347fbd1a; border-radius:6px; }
+.portal-mode .session-actions .new-chat:hover { background:#256ba5; border-color:#256ba5; }
+.portal-mode .session-caption { color:#778da3; border-color:#dfe8f2; }
+.portal-mode .session-caption .resume-task { color:#367fb8; }
+.portal-mode .session-caption .resume-task:hover { color:#225f93; background:#e5eff9; }
+.portal-mode .session-item { color:#526d88; }
+.portal-mode .session-item:hover { background:#e8f1fa; }
+.portal-mode .session-item.active { color:#246da8; background:#dfedfb; box-shadow:inset 3px 0 #438bc5; }
+.portal-mode .session-help,.portal-mode .session-list>.muted { color:#8094a8; }
+.portal-mode .chat-main { background:#fff; }
+.portal-mode .chat-header { background:#fff; border-color:#e1eaf3; }
+.portal-mode .chat-header h2 { color:#234b70; }
+.portal-mode .chat-header small { color:#8194a7; }
+.portal-mode .chat-header .online-dot { background:#438bc5; }
+.portal-mode .chat-header .tile { background:#e8f2fc; color:#347fbd; }
+.portal-mode .chat-header>.btn { color:#397aaa; border-color:#d6e4f1; background:#f8fbff; }
+.portal-mode .chat-scroll { background:linear-gradient(180deg,#f8fbff 0,#fff 280px); scrollbar-color:#bfd2e5 transparent; }
+.portal-mode .large-sparkle { background:linear-gradient(140deg,#e0efff,#f2f8ff); border-color:#cfE3f6; box-shadow:0 6px 24px #347fbd12; color:#3788c7; }
+.portal-mode .chat-welcome .eyebrow { color:#7a9abb; }
+.portal-mode .chat-welcome h1 { color:#234e77; }
+.portal-mode .chat-welcome>p { color:#758ba0; line-height:1.8; }
+.portal-mode .prompt-grid button { background:#fff; border-color:#dce8f4; color:#527696; font-size:12px; }
+.portal-mode .prompt-grid button>.icon { color:#5295c9; }
+.portal-mode .prompt-grid button:hover { background:#edf6ff; border-color:#a5cae8; box-shadow:0 3px 10px #3978b00a; }
+.portal-mode .composer-wrap { background:#fff; border-top:1px solid #edf2f7; padding-top:12px; }
+.portal-mode .context-bar { color:#7c91a6; }
+.portal-mode .context-bar select { color:#52748f; border-color:#dce6f0; background:#f5f9fd; }
+.portal-mode .composer { background:#fbfdff; border-color:#bad3ea; box-shadow:0 3px 12px #347fbd09; border-radius:8px; transition:border-color .15s,box-shadow .15s; }
+.portal-mode .composer:focus-within { border-color:#5399cf; box-shadow:0 0 0 3px #dceeff; }
+.portal-mode .composer textarea { color:#345775; font-size:13px; }
+.portal-mode .composer textarea:focus { box-shadow:none; }
+.portal-mode .composer textarea::placeholder { color:#93a8bb; }
+.portal-mode .send-btn { background:#347fbd; color:#fff; }
+.portal-mode .send-btn:hover:not(:disabled) { background:#246ba7; }
+.portal-mode .send-btn:disabled { background:#9cbad2; cursor:not-allowed; }
+.portal-mode .composer-note { color:#8fa1b3; }
+.portal-mode .user-message>span:first-child { color:#235f91; background:#e4f0fc; border:1px solid #d4e6f7; }
+.portal-mode .user-message .avatar { color:#fff; background:#4387bd; }
+.portal-mode .ai-avatar { color:#347fbd; background:#e9f3fd; border-color:#d4e6f7; }
+.portal-mode .message-author { color:#376f9d; }
+.portal-mode .message-author small { color:#8fa1b3; }
+.portal-mode .message-content>p { color:#49647d; font-size:13px; }
+.portal-mode .answer-resources,.portal-mode .answer-resource { border-color:#dfe9f3; }
+.portal-mode .answer-resource .text-button { color:#316fa0; }
+.portal-mode .answer-resource small { color:#8598ab; }
+.portal-mode .answer-actions,.portal-mode .answer-actions .btn { color:#7c93a9; }
+.portal-mode .answer-actions .btn:hover { color:#2f7ebc; background:#edf5fd; }
+.portal-mode .citation { background:#f3f8fe; border-color:#dce9f6; color:#447fae; }
+.portal-mode .citation small { color:#829aaf; }
+.portal-mode .indicator-result { border-color:#dce8f3; background:#f7fbff; }
+.portal-mode .indicator-result strong { color:#337fba; }
+.portal-mode .indicator-result>div>span,.portal-mode .indicator-result strong small,.portal-mode .indicator-result p,.portal-mode .mini-chart small,.portal-mode .mini-chart>div { color:#7794ad; }
+.portal-mode .mini-chart i { background:linear-gradient(#5198cf,#b3d4ef); }
+.portal-mode .chat-layout .caliber { color:#708da5; border-color:#e0eaf3; }
+.portal-mode .execution-trace { background:#f7faff; border-color:#d9e7f3; }
+.portal-mode .execution-trace summary { color:#447bA5; }
+.portal-mode .trace-node { border-color:#a6c9e5; }
+.portal-mode .trace-node small,.portal-mode .thinking { color:#7e94a8; }
+.portal-mode .chat-layout .chip,.portal-mode .chat-layout .mini-label { color:#5484ac; background:#edf5fd; border-color:#dbe8f4; }
+.portal-mode .pc-context-banner { color:#356d99; background:#edf5fd; }
+.portal-mode .pc-context-banner a { color:#2e7dbb; }
+@media(max-width:600px) {
+ .portal-mode .prompt-grid button { font-size:11px; }
+ .portal-mode .composer textarea { font-size:16px; }
+ .portal-mode .message-content>p { font-size:13px; }
+}
+/* The legacy document readability rule uses !important; scope its override to chat. */
+.portal-mode .message-content>p { color:#49647d !important; }
+.portal-mode .answer-context .tag { color:#5c819f; background:#edf5fc; border-color:#dce9f4; }

@@ -1,0 +1,322 @@
+{
+  "checks": [
+    {
+      "width": 1440,
+      "route": "home",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "data",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "catalog",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "search?q=矿业权",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "data/r_scene_demo",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "map",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "capabilities",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "tools",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "capabilities/coordinate",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "capabilities/area",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "capabilities/buffer",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "services",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "services/notice",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "services/progress",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "knowledge",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "landscape",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "landscape/ecology",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "requests",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "app-center",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "internal-home",
+      "status": "passed"
+    },
+    {
+      "width": 1440,
+      "route": "assistant",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "home",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "data",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "catalog",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "search?q=矿业权",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "data/r_scene_demo",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "map",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "capabilities",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "tools",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "capabilities/coordinate",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "capabilities/area",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "capabilities/buffer",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "services",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "services/notice",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "services/progress",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "knowledge",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "landscape",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "landscape/ecology",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "requests",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "app-center",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "internal-home",
+      "status": "passed"
+    },
+    {
+      "width": 1024,
+      "route": "assistant",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "home",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "data",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "catalog",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "search?q=矿业权",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "data/r_scene_demo",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "map",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "capabilities",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "tools",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "capabilities/coordinate",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "capabilities/area",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "capabilities/buffer",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "services",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "services/notice",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "services/progress",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "knowledge",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "landscape",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "landscape/ecology",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "requests",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "app-center",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "internal-home",
+      "status": "passed"
+    },
+    {
+      "width": 390,
+      "route": "assistant",
+      "status": "passed"
+    }
+  ],
+  "browserErrors": {
+    "errors": []
+  }
+}

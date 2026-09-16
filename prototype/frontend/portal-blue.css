@@ -1,0 +1,138 @@
+/* Reference portal: blue navigation, compact filters and image-led business cards. */
+body.portal-mode {
+  --green:#327dbd; --deep:#164775; --ink:#263c52; --muted:#768597;
+  --line:#e0e7ef; --bg:#f4f7fa; --soft:#edf5fc;
+  --pc-green:#327dbd; --pc-deep:#164775; --pc-soft:#edf5fc;
+  --pc-ink:#263c52; --pc-muted:#768597; --pc-line:#e0e7ef;
+  color:var(--ink); background:#f4f7fa;
+}
+.portal-mode .portal-container { width:min(1600px,calc(100% - 64px)); }
+.portal-mode .portal-utility { background:#f6f9fc; color:#74869a; border-color:#e2ebf4; }
+.portal-mode .portal-header { background:linear-gradient(115deg,#075287,#07528e 55%,#0b3f72); border-color:#2f71a4; backdrop-filter:none; }
+.portal-mode .portal-header-inner { height:82px; gap:26px; }
+.portal-mode .portal-brand { color:#1d6588; background:#fff; align-self:stretch; padding-right:42px; position:relative; isolation:isolate; font-size:22px; }
+.portal-mode .portal-brand::before { content:''; position:absolute; z-index:-1; inset:0 -12px 0 -40px; background:#fff; transform:skewX(-28deg); box-shadow:15px 0 #ffffff65,30px 0 #ffffff25; }
+.portal-mode .portal-brand small { color:#7394a9; font-size:8px; }
+.portal-mode .portal-mark { color:#257d8b; background:#edf6f8; border-radius:50%; }
+.portal-mode .portal-nav { gap:36px; }
+.portal-mode .portal-nav a { color:#e9f4ff; font-size:17px; }
+.portal-mode .portal-nav a.active,.portal-mode .portal-nav a:hover { color:#fff; }
+.portal-mode .portal-nav a.active::after { background:#fff; width:100%; height:3px; bottom:13px; }
+.portal-mode .portal-account,.portal-mode .portal-menu-toggle { color:white; }
+.portal-mode .portal-account .avatar { color:#24649b; background:#eaf5ff; }
+.portal-mode .portal-assistant-link { color:white; background:#ffffff12; border-color:#ffffff40; }
+.portal-mode .portal-breadcrumb { padding:21px 0 15px; color:#526980; font-size:13px; }
+.portal-mode .portal-breadcrumb::before { content:''; width:3px; height:17px; background:#3e84c4; border-radius:2px; }
+.portal-mode main.portal-main { width:min(1600px,calc(100% - 64px)); padding:8px 0 40px; }
+.portal-mode main.portal-home { width:100%; padding:0; }
+.portal-mode .page-heading h1 { color:#23496f; font-size:26px; }
+.portal-mode .page-heading p { color:#798899; }
+.portal-mode .btn,.portal-mode input,.portal-mode select { border-radius:4px; }
+.portal-mode .btn.primary,.portal-mode .portal-search button { background:#367fbe; border-color:#367fbe; color:#fff; }
+.portal-mode .btn.primary:hover,.portal-mode .portal-search button:hover { background:#2469a5; }
+.portal-mode .btn:disabled { opacity:.45; cursor:not-allowed; }
+.portal-mode .tile { background:#eaf3fb; color:#367fbe; }
+.portal-mode .chips span { background:#edf5fc; color:#4e82b2; }
+.portal-mode .portal-hero { background:radial-gradient(ellipse at 90% 20%,#dceefa,transparent 60%),linear-gradient(110deg,#f6faff,#e6f2fc); }
+.portal-mode .portal-hero::before { filter:hue-rotate(95deg); }
+.portal-mode .portal-hero h1 { color:#174b78; }
+.portal-mode .portal-hero h1 span,.portal-mode .portal-kicker,.portal-mode .portal-hero-eyebrow { color:#4385bb; }
+.portal-mode .portal-hero-copy>p { color:#6d8499; }
+.portal-mode .portal-hero-inner { min-height:400px; }
+.portal-mode .portal-landscape { filter:hue-rotate(80deg); }
+.portal-mode .portal-section { padding-top:36px; padding-bottom:36px; }
+.portal-mode .portal-section-title h2,.portal-mode .pc-home-bottom h2,.portal-mode .pc-home-ai h2 { color:#254b70; }
+.portal-mode .pc-home-shortcuts { background:#fff; border-color:#dce8f3; border-radius:6px; }
+.portal-mode .pc-home-ai,.portal-mode .pc-intelligence-intro,.portal-mode .portal-service-band { background:#eaf3fb; border-color:#d6e6f4; }
+.portal-mode .pc-guide,.portal-mode .portal-guide-card { background:#edf4fb; border-color:#dce8f3; }
+.portal-mode .portal-footer { background:#eef3f8; border-top:1px solid #dce6ef; color:#70859a; }
+.portal-mode .portal-footer-brand { color:#285778; }
+.portal-mode .pc-app-grid { gap:18px; }
+.portal-mode .pc-app-card { border:1px solid #e5eaf0; border-radius:6px; box-shadow:0 2px 9px #173a5c06; }
+.portal-mode .pc-app-card:hover { transform:translateY(-3px); box-shadow:0 8px 22px #20588918; border-color:#a9cce8; }
+.portal-mode .pc-app-cover { display:block; height:auto; aspect-ratio:1.8; position:relative; background:#173c5b; }
+.portal-mode .pc-app-cover>img { display:block; width:100%; height:100%; object-fit:cover; }
+.portal-mode .pc-app-cover::after { content:''; position:absolute; inset:45% 0 0; background:linear-gradient(transparent,#092b4de8); pointer-events:none; }
+.portal-mode .pc-app-cover h3 { position:absolute; z-index:1; bottom:12px; left:14px; right:14px; margin:0; font-size:19px; line-height:1.5; color:white; text-shadow:0 1px 3px #06233f; }
+.portal-mode .pc-cover-tag { left:auto; top:10px; right:10px; background:#4e97d3; color:#fff; border-radius:3px; font-size:12px; padding:4px 8px; z-index:2; }
+.portal-mode .pc-app-content { padding:12px 13px; }
+.portal-mode .pc-app-publisher { display:flex; align-items:center; gap:8px; min-width:0; }
+.portal-mode .pc-app-publisher>span { flex-shrink:0; color:#4a82b5; background:#edf5fc; padding:2px 5px; font-size:12px; }
+.portal-mode .pc-app-publisher small { color:#7b8794; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.portal-mode .pc-app-content>p { color:#7b8794; font-size:12px; min-height:0; line-height:1.7; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:9px 0 10px; }
+.portal-mode .pc-app-footer { border-color:#edf1f6; padding-top:9px; }
+.portal-mode .pc-app-footer>span { color:#8495a5; }
+.portal-mode .pc-app-footer .btn { padding:5px 9px; font-size:11px; }
+.portal-catalog { background:white; border:1px solid #e6ebf1; border-radius:6px; min-height:620px; padding:0 18px 16px; }
+.portal-catalog-title { display:flex; align-items:center; justify-content:space-between; gap:15px; padding:15px 0; border-bottom:1px solid #edf1f5; }
+.portal-catalog-title h1 { font-size:17px; margin:0; color:#34506b; }
+.portal-catalog-title h1 span { color:#718297; font-size:14px; font-weight:400; }
+.portal-catalog-filters { padding:16px 0 18px; }
+.portal-filter-row { display:flex; gap:15px; margin-bottom:12px; align-items:baseline; font-size:14px; }
+.portal-filter-row>strong { flex-shrink:0; font-weight:600; padding-top:4px; }
+.portal-filter-row>div { display:flex; flex-wrap:wrap; gap:8px 12px; }
+.portal-filter-row button { border:0; background:transparent; color:#44566b; padding:4px 11px; border-radius:3px; }
+.portal-filter-row button.active { background:#3d81be; color:white; }
+.portal-filter-row button:hover:not(.active) { background:#edf5fc; color:#2673b1; }
+.portal-catalog-search { display:flex; gap:10px; align-items:center; margin-top:18px; }
+.portal-catalog-search .search-control { width:400px; background:#fff; border:1px solid #d7e1eb; border-radius:4px; }
+.portal-catalog-search .search-control input { width:100%; min-width:0; }
+.portal-catalog-search>span { margin-left:auto; color:#8a97a6; font-size:12px; }
+.portal-mode .portal-catalog-grid { grid-template-columns:repeat(4,minmax(0,1fr)); min-height:280px; align-content:start; }
+.portal-catalog-grid>.empty-state { grid-column:1/-1; }
+.portal-mode .portal-catalog .pagination { border-top:0; margin-top:24px; }
+.portal-resource-cover,.portal-agent-cover { display:block; width:calc(100% + 48px); margin:-24px -24px 18px; height:155px; padding:0; border:0; background:#153854; overflow:hidden; }
+.portal-resource-cover img,.portal-agent-cover img { width:100%; height:100%; object-fit:cover; display:block; }
+.portal-mode .resource-card,.portal-mode .agent-card { padding:24px; overflow:hidden; border-radius:6px; border-color:#e0e7ef; }
+.portal-mode .resource-card h3,.portal-mode .agent-card h3 { color:#254b70; }
+.portal-mode .portal-list-thumb { width:112px; height:66px; object-fit:cover; border-radius:4px; flex-shrink:0; }
+.portal-mode .pc-resource-list button>span:not(.tag) { min-width:0; }
+.portal-mode a:focus-visible,.portal-mode button:focus-visible { outline:3px solid #71b4ec; outline-offset:3px; }
+@media(min-width:1500px) { .portal-mode .portal-nav { gap:54px; } }
+@media(max-width:1200px) {
+ .portal-mode .portal-header-inner { gap:15px; }
+ .portal-mode .portal-brand { font-size:18px; padding-right:22px; }
+ .portal-mode .portal-nav { gap:20px; }
+ .portal-mode .portal-nav a { font-size:15px; }
+ .portal-mode .portal-assistant-link { display:none; }
+ .portal-mode .portal-catalog-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media(max-width:1000px) {
+ .portal-mode .portal-nav { background:#0d4d80; }
+ .portal-mode .portal-nav a.active::after { bottom:4px; }
+ .portal-mode .portal-header-inner { height:74px; }
+ .portal-mode .portal-catalog-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:600px) {
+ .portal-mode .portal-container,.portal-mode main.portal-main { width:calc(100% - 28px); }
+ .portal-mode main.portal-home { width:100%; }
+ .portal-mode .portal-header-inner { height:66px; }
+ .portal-mode .portal-brand { font-size:16px; padding-right:10px; gap:7px; }
+ .portal-mode .portal-brand small { font-size:6px; letter-spacing:.5px; }
+ .portal-mode .portal-mark { width:31px; height:34px; }
+ .portal-mode .portal-header-tools { gap:8px; }
+ .portal-mode .portal-account>span:not(.avatar),.portal-mode .portal-account>.icon { display:none; }
+ .portal-mode .portal-breadcrumb { padding-top:16px; }
+ .portal-mode .portal-catalog-grid,.portal-mode .pc-app-grid { grid-template-columns:1fr; }
+ .portal-catalog { padding:0 12px 14px; }
+ .portal-catalog-title h1 { font-size:15px; }
+ .portal-catalog-title h1 span { font-size:12px; }
+ .portal-catalog-title>.btn { padding:6px; font-size:11px; }
+ .portal-filter-row { gap:4px; font-size:12px; }
+ .portal-filter-row>div { gap:5px 2px; }
+ .portal-filter-row button { padding:4px 7px; }
+ .portal-catalog-search { flex-wrap:wrap; gap:8px; }
+ .portal-catalog-search .search-control { width:100%; }
+ .portal-mode .pc-app-cover h3 { font-size:19px; }
+ .portal-mode .portal-list-thumb { width:80px; height:52px; }
+ .portal-mode .portal-hero-inner { min-height:0; }
+ .portal-mode .portal-hero-copy { padding:32px 0; }
+ .portal-mode .pc-home-shortcuts { width:calc(100% - 28px); }
+}
+.portal-mode .pc-home-hero .portal-landscape>svg { width:100%; height:340px; margin:0; }
+.portal-mode .portal-map-caption { margin-top:0; color:#688ca8; }
+.portal-mode .portal-search,.portal-mode .pc-home-shortcuts>a { border-color:#dce7f1; background:#fff; }
+.portal-mode .portal-hot-search,.portal-mode .portal-hot-search a,.portal-mode .portal-section-title>a { color:#66839d; }
+.portal-mode .resource-card>p,.portal-mode .agent-card>p,.portal-mode .card-foot,.portal-mode .result-count,.portal-mode .toolbar-tip,.portal-mode .pagination,.portal-mode .portal-footer p,.portal-mode .portal-footer-links a,.portal-mode .portal-footer-links button { color:#74879a; }
+.portal-mode .resource-card:hover,.portal-mode .agent-card:hover { border-color:#a9cce8; }
+.portal-mode .portal-knowledge-row .portal-list-thumb { width:96px; height:58px; }

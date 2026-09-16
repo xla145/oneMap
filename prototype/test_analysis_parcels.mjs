@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {parcelCollection,updateParcel} from './frontend/analysis-parcels.js';
+const geometry={type:'Polygon',coordinates:[[[0,0],[1,0],[1,1],[0,0]]]};
+const initial=parcelCollection(JSON.stringify({type:'FeatureCollection',features:[{type:'Feature',geometry,properties:{id:'parcel-2',name:'保留'}}]}));
+const added=updateParcel(initial,null,geometry);
+assert.equal(initial.features.length,1);
+assert.deepEqual(added.features.map(f=>f.properties.id),['parcel-2','parcel-1']);
+const edited=updateParcel(added,1,geometry,'改名');
+assert.equal(edited.features[0].properties.name,'保留');
+assert.equal(edited.features[1].properties.id,'parcel-1');
+assert.equal(added.features[1].properties.name,'地块 1');
+assert.throws(()=>updateParcel(initial,2,geometry));
+assert.throws(()=>updateParcel({features:Array.from({length:100},(_,i)=>({geometry,properties:{id:String(i)}}))},null,geometry));
+assert.equal(parcelCollection(JSON.stringify(geometry.coordinates[0])).features.length,1);
+assert.throws(()=>parcelCollection('{broken'));
+console.log('Parcel editing checks passed: preservation, identifiers, index bounds, limits and coordinate arrays.');

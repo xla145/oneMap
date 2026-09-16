@@ -1,0 +1,87 @@
+{
+  "resources": {
+    "before": 14,
+    "after": 14,
+    "changed": []
+  },
+  "knowledge": {
+    "before": 2,
+    "after": 2,
+    "changed": []
+  },
+  "indicators": {
+    "before": 6,
+    "after": 6,
+    "changed": []
+  },
+  "corpora": {
+    "before": 5,
+    "after": 5,
+    "changed": []
+  },
+  "agents": {
+    "before": 5,
+    "after": 5,
+    "changed": []
+  },
+  "templates": {
+    "before": 1,
+    "after": 1,
+    "changed": []
+  },
+  "dictionaries": {
+    "before": 1,
+    "after": 1,
+    "changed": []
+  },
+  "users": {
+    "before": 7,
+    "after": 7,
+    "changed": []
+  },
+  "memories": {
+    "before": 2,
+    "after": 2,
+    "changed": []
+  },
+  "sessions": {
+    "before": 12,
+    "after": 12,
+    "changed": []
+  },
+  "applications": {
+    "before": 1,
+    "after": 1,
+    "changed": []
+  },
+  "feedback": {
+    "before": 1,
+    "after": 1,
+    "changed": []
+  },
+  "calls": {
+    "before": 12,
+    "after": 12,
+    "changed": []
+  },
+  "audit": {
+    "before": 22,
+    "after": 22,
+    "changed": []
+  },
+  "batches": {
+    "before": 0,
+    "after": 0,
+    "changed": []
+  },
+  "evaluations": {
+    "before": 0,
+    "after": 0,
+    "changed": []
+  },
+  "feedbackDrafts": {
+    "before": 0,
+    "after": 0,
+    "changed": []
+  }
+}

@@ -1,0 +1,110 @@
+[
+  {
+    "route": "admin/resources",
+    "width": 1440,
+    "heading": "资源与元数据",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-tools",
+    "width": 1440,
+    "heading": "能力服务管理",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-keys",
+    "width": 1440,
+    "heading": "API 密钥审核",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-users",
+    "width": 1440,
+    "heading": "注册申请审核",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-roles",
+    "width": 1440,
+    "heading": "门户角色分配",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-materials",
+    "width": 1440,
+    "heading": "下载资料管理",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-audit",
+    "width": 1440,
+    "heading": "统一日志审计",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-security",
+    "width": 1440,
+    "heading": "安全配置",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-monitor",
+    "width": 1440,
+    "heading": "系统监控",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-analytics",
+    "width": 1440,
+    "heading": "门户统计分析",
+    "overflow": false
+  },
+  {
+    "route": "admin/public-portal?tab=services",
+    "width": 1440,
+    "heading": "办事服务管理",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-tools",
+    "width": 390,
+    "heading": "能力服务管理",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-security",
+    "width": 390,
+    "heading": "安全配置",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-monitor",
+    "width": 390,
+    "heading": "系统监控",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-analytics",
+    "width": 390,
+    "heading": "门户统计分析",
+    "overflow": false
+  },
+  {
+    "route": "admin/portal-keys",
+    "width": 390,
+    "heading": "API 密钥审核",
+    "overflow": false
+  },
+  {
+    "route": "front/register",
+    "width": 390,
+    "heading": "门户账号申请",
+    "overflow": false
+  },
+  {
+    "route": "front/knowledge",
+    "width": 390,
+    "heading": "资讯下载",
+    "overflow": false
+  }
+]

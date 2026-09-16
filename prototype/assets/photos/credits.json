@@ -1,0 +1,62 @@
+{
+  "nature": {
+    "title": "File:Hulun Buir.jpg",
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/Hulun_Buir.jpg/1280px-Hulun_Buir.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Hulun_Buir.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "page": "https://commons.wikimedia.org/wiki/File:Hulun_Buir.jpg",
+    "artist": "Emmazzye",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "This is the grassland in Hulun Buir",
+    "label": "呼伦贝尔草原",
+    "file": "scenic-nature.jpg"
+  },
+  "planning": {
+    "title": "File:Hohhot aerial 3.jpg",
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Hohhot_aerial_3.jpg/1280px-Hohhot_aerial_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/a/ac/Hohhot_aerial_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "page": "https://commons.wikimedia.org/wiki/File:Hohhot_aerial_3.jpg",
+    "artist": "Andrzej Otrębski",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "Hohhot - aerial view",
+    "label": "呼和浩特城市航拍",
+    "file": "scenic-planning.jpg"
+  },
+  "energy": {
+    "title": "File:Huitengxile wind farm 873469049.jpg",
+    "url": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Huitengxile_wind_farm_873469049.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/5/5e/Huitengxile_wind_farm_873469049.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "page": "https://commons.wikimedia.org/wiki/File:Huitengxile_wind_farm_873469049.jpg",
+    "artist": "Steven Buss",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "description": "Huitengxile wind farm, <a href=\"https://en.wikipedia.org/wiki/Inner_Mongolia\" class=\"extiw\" title=\"en:Inner Mongolia\">Inner Mongolia</a>, People's Republic of China",
+    "label": "辉腾锡勒风电场",
+    "file": "scenic-energy.jpg"
+  },
+  "public": {
+    "title": "File:20230608 Inner Mongolia Museum and Wulanqiate.jpg",
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/01/20230608_Inner_Mongolia_Museum_and_Wulanqiate.jpg/1280px-20230608_Inner_Mongolia_Museum_and_Wulanqiate.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/0/01/20230608_Inner_Mongolia_Museum_and_Wulanqiate.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "page": "https://commons.wikimedia.org/wiki/File:20230608_Inner_Mongolia_Museum_and_Wulanqiate.jpg",
+    "artist": "Yumeto",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "description": "Inner Mongolia Museum and Inner Mongolia Wulanqiate (Ulanqat)",
+    "label": "内蒙古博物院与乌兰恰特",
+    "file": "scenic-public.jpg"
+  },
+  "ecology": {
+    "title": "File:额尔古纳湿地公园—马蹄岛 - panoramio.jpg",
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4d/%E9%A2%9D%E5%B0%94%E5%8F%A4%E7%BA%B3%E6%B9%BF%E5%9C%B0%E5%85%AC%E5%9B%AD%E2%80%94%E9%A9%AC%E8%B9%84%E5%B2%9B_-_panoramio.jpg/1280px-%E9%A2%9D%E5%B0%94%E5%8F%A4%E7%BA%B3%E6%B9%BF%E5%9C%B0%E5%85%AC%E5%9B%AD%E2%80%94%E9%A9%AC%E8%B9%84%E5%B2%9B_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/4/4d/%E9%A2%9D%E5%B0%94%E5%8F%A4%E7%BA%B3%E6%B9%BF%E5%9C%B0%E5%85%AC%E5%9B%AD%E2%80%94%E9%A9%AC%E8%B9%84%E5%B2%9B_-_panoramio.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "page": "https://commons.wikimedia.org/wiki/File:%E9%A2%9D%E5%B0%94%E5%8F%A4%E7%BA%B3%E6%B9%BF%E5%9C%B0%E5%85%AC%E5%9B%AD%E2%80%94%E9%A9%AC%E8%B9%84%E5%B2%9B_-_panoramio.jpg",
+    "artist": "中国郑开亮",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "description": "额尔古纳湿地公园—马蹄岛",
+    "label": "额尔古纳湿地公园 · 马蹄岛",
+    "file": "scenic-ecology.jpg"
+  }
+}

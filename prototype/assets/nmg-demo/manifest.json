@@ -1,0 +1,79 @@
+{
+  "source": "bak/内蒙古一张图demo",
+  "notice": "原始模拟演示数据，非正式业务成果。原始坐标与字段完整保留。",
+  "files": [
+    {
+      "name": "data/nmg_geo.js",
+      "bytes": 119429,
+      "sha256": "bc0c3cc8fb40dc9e301c95241eccdc894700aceed3488378bf2e96dc671180c9"
+    },
+    {
+      "name": "data/nmg_county.js",
+      "bytes": 215347,
+      "sha256": "fc55f0cb86c57492241d716a7ddc77b96fd19665a5c9e3778c036be11afbfa79"
+    },
+    {
+      "name": "data/nmg_stats.js",
+      "bytes": 8906,
+      "sha256": "1adced90b23a85d3ae61b5062c884cc264fac4efbea51eba5b810a241fbd85fb"
+    },
+    {
+      "name": "data/nmg_poi.js",
+      "bytes": 18613,
+      "sha256": "c002a27db3d93a268a69a7adb3873de7316c716139057bfde6281341511a1a17"
+    },
+    {
+      "name": "data/nmg_town.js",
+      "bytes": 32011,
+      "sha256": "af37b36067a24499d8c5d6f61402a52ca23f7a7ab17e58e16dde9523d47ea52b"
+    },
+    {
+      "name": "data/nmg_nr.js",
+      "bytes": 534099,
+      "sha256": "1e81fb95979cb0f0ac73bf9a5108c276350dbd5006f911b0cbef6835d737f42b"
+    },
+    {
+      "name": "data/nmg_modules.js",
+      "bytes": 68285,
+      "sha256": "81cb88be86ef9b3a2c727dc42fc2fdc1b7674d0512f02a60b156a525803a17c1"
+    },
+    {
+      "name": "index.html",
+      "bytes": 2460077,
+      "sha256": "a991f3ab8140072741568108f971b0be0d2833f2f7d16fcd9e219ed0ad24d531"
+    },
+    {
+      "name": "nmg_terrain_admin.png",
+      "bytes": 8765901,
+      "sha256": "be8ea9527496194782e050eeb0edd472d9252eafb795fd1d582e9aa79652d0bd"
+    },
+    {
+      "name": "nmg_province.geojson",
+      "bytes": 42981,
+      "sha256": "3f6b6f86bfb35844fdef630edb66a046917c841ce69a8787cbc3043170b6292f"
+    },
+    {
+      "name": "nmg_cities.geojson",
+      "bytes": 86279,
+      "sha256": "1187029050454285efaf494664d8cef6459f18894257e3a3c509c1a4c9011be1"
+    },
+    {
+      "name": "nmg_counties.geojson",
+      "bytes": 215328,
+      "sha256": "3290f30e49c10d38ed0b74d89ddada0a5f5652e8821349fb76fa1d7f766a7bc4"
+    },
+    {
+      "name": "nmg_centers.geojson",
+      "bytes": 2329,
+      "sha256": "9a15627f274f198d271552d371adc58b5074b042657837b85d97991325fe068b"
+    }
+  ],
+  "counts": {
+    "layers": 28,
+    "features": 1018,
+    "counties": 103,
+    "towns": 158,
+    "modules": 4,
+    "functions": 40
+  }
+}

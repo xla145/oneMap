@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {convert,polygon,area,buffer} from './frontend/public-tools.js';
+const origin=convert(0,0,'forward');assert.ok(Math.abs(origin.x)<1e-8&&Math.abs(origin.y)<1e-8);
+const projected=convert(111.7,40.8,'forward'),back=convert(projected.x,projected.y,'inverse');
+assert.ok(Math.abs(back.x-111.7)<1e-9&&Math.abs(back.y-40.8)<1e-9);
+assert.throws(()=>convert('',0,'forward'));assert.throws(()=>convert(0,89,'forward'));
+const ring=polygon([[0,0],[1,0],[1,1],[0,1]]),a=area(ring);
+assert.ok(a>12360000000&&a<12365000000);assert.ok(Math.abs(area([...ring].reverse())-a)<0.01);
+const b=buffer(111.7,40.8,1000);assert.ok(Math.abs(area(b)-Math.PI*1000**2)/(Math.PI*1000**2)<0.002);
+assert.ok(Math.abs(area(buffer(111.7,40.8,2000))/area(b)-4)<0.01);
+assert.throws(()=>polygon([[0,0],[1,1],[1,0],[0,1]]));
+assert.throws(()=>polygon({type:'Polygon',coordinates:[ring,ring]}));
+assert.throws(()=>area(polygon([[0,0],[1,0],[2,0]])));
+assert.throws(()=>buffer(0,0,-1));assert.throws(()=>buffer(0,0,100001));
+assert.throws(()=>polygon([[179,0],[-179,1],[179,1]]));
+console.log('Public tools passed: known area, projection round-trip, buffer scaling, malformed and unsupported geometries.');

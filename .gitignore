@@ -1,0 +1,12 @@
+**/node_modules/
+**/test-results/
+**/playwright-report/
+**/__pycache__/
+nmg-onemap-service/data/
+.DS_Store
+
+prototype/data/
+内蒙古一张图demo
+
+bak
+**/.venv/

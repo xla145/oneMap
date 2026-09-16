@@ -1,0 +1,218 @@
+[
+  {
+    "url": "#/front/home",
+    "ready": true,
+    "heading": "让资源触手可及，让业务更进一步。",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/front/assistant",
+    "ready": true,
+    "heading": "资源检索助手",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/front/agents",
+    "ready": true,
+    "heading": "智能体广场",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/front/catalog",
+    "ready": true,
+    "heading": "资源目录",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/front/applications",
+    "ready": true,
+    "heading": "我的申请",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/front/profile",
+    "ready": true,
+    "heading": "个人中心",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/admin/overview",
+    "ready": true,
+    "heading": "管理总览",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/admin/agents",
+    "ready": true,
+    "heading": "智能体管理",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/admin/resources",
+    "ready": true,
+    "heading": "资源与元数据",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/admin/indicators",
+    "ready": true,
+    "heading": "指标知识管理",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/admin/knowledge",
+    "ready": true,
+    "heading": "知识库管理",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/admin/corpora",
+    "ready": true,
+    "heading": "语料管理",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/admin/memories",
+    "ready": true,
+    "heading": "用户记忆管理",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/admin/calls",
+    "ready": true,
+    "heading": "调用与反馈",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/admin/approvals",
+    "ready": true,
+    "heading": "资源申请对接",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/admin/settings",
+    "ready": true,
+    "heading": "基础管理",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1440
+  },
+  {
+    "url": "#/front/home",
+    "ready": true,
+    "heading": "让资源触手可及，让业务更进一步。",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 390
+  },
+  {
+    "url": "#/front/assistant",
+    "ready": true,
+    "heading": "资源检索助手",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 390
+  },
+  {
+    "url": "#/front/catalog",
+    "ready": true,
+    "heading": "资源目录",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 390
+  },
+  {
+    "url": "#/front/profile",
+    "ready": true,
+    "heading": "个人中心",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 390
+  },
+  {
+    "url": "#/admin/resources",
+    "ready": true,
+    "heading": "资源与元数据",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 390
+  },
+  {
+    "url": "#/admin/overview",
+    "ready": true,
+    "heading": "管理总览",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 390
+  },
+  {
+    "url": "#/front/home",
+    "ready": true,
+    "heading": "让资源触手可及，让业务更进一步。",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1920
+  },
+  {
+    "url": "#/admin/overview",
+    "ready": true,
+    "heading": "管理总览",
+    "overflow": false,
+    "blank": false,
+    "brokenImages": 0,
+    "width": 1920
+  }
+]
