@@ -1,3 +1,4 @@
+import {qaExamples} from './frontend/qa-examples.js';
 import {createBootstrapCache} from './frontend/bootstrap-cache.js?v=20260917-1';
 import {createOperationsCenter,operationMenu,operationLabels,operationSection} from './frontend/operations-center.js?v=20260917-config1';
 import {integrationNav,legacyIntegration} from './frontend/integration-routes.js';
@@ -8,7 +9,7 @@ import { createIntegration } from './frontend/integration.js?v=20260917-gis-tab-
 import { createCenters } from './frontend/centers.js?v=20260916-centers';
 import { createPortalOperations } from './frontend/portal-operations.js';
 import { createPortalAdmin } from './frontend/portal-admin.js?v=20260916-intelligence-links';
-import { createPublicPortal } from './frontend/public-portal.js?v=20260917-tool-entry2';
+import { createPublicPortal } from './frontend/public-portal.js?v=20260917-qa';
 import { renderNews, newsCategory, newsCategories, searchNews, recommendedNews, newsDownloadText } from './frontend/news.js?v=20260915-1';
 import { previewSource } from './frontend/previews.js';
 import { randomUUID } from './frontend/uuid.js';
@@ -434,18 +435,7 @@ function renderAssistant() {
         .join("") || '<p class="muted">你的会话将在这里显示</p>'
     }</div><details class="service-sidebar-links"><summary>${icon('file')}直接办理</summary><div>${(D.publicPortal?.services||[]).map(s=>`<a href="#/front/services/${encodeURIComponent(s.id)}">${esc(s.name)} ${icon('arrow')}</a>`).join('')}</div></details><div class="session-help">${icon("shield")}会话按演示用户独立保存</div></aside><section class="chat-main"><div class="chat-header"><span class="tile ${agent.color}">${icon(agent.icon)}</span><div><h2>办事问答</h2><small>当前能力：${esc(agent.name)}</small></div>${btn(`申请清单 (${cart.length})`, "cart", "", "small", "file")}</div><div class="chat-scroll" id="chat-scroll">${serviceGuidance(messages)}${
       !messages.length
-        ? `<div class="chat-welcome"><div class="large-sparkle">${icon(agent.icon)}</div><h2>有什么可以帮你？</h2><p>查询办事指南、了解政策，或找到需要的数据。</p><div class="prompt-grid">${[
-            "用地审批进度怎么查？",
-            "不动产登记信息如何查询？",
-            "数据申请需要什么材料？",
-            "什么是耕地占补平衡？",
-          ]
-            .filter((v, i, a) => a.indexOf(v) === i)
-            .map(
-              (q) =>
-                `<button data-action="prompt" data-id="${esc(q)}">${icon("message")}<span>${esc(q)}</span>${icon("arrow")}</button>`,
-            )
-            .join("")}</div></div>`
+        ? `<div class="chat-welcome"><div class="large-sparkle">${icon(agent.icon)}</div><h2>有什么可以帮你？</h2><p>查询办事指南、了解政策，或找到需要的数据。</p>${qaExamples(esc,icon)}</div>`
         : messages
             .map((m) =>
               m.role === "user"
@@ -466,7 +456,11 @@ function renderMessage(m, agent) {
   const rows = m.resourceIds
     .map((id) => D.resources.find((r) => r.id === id))
     .filter(Boolean);
-  return `<div class="assistant-message"><span class="ai-avatar">${icon(agent.icon)}</span><div class="message-content"><div class="message-author">${esc(agent.name)} <small>v${m.agentVersion}.0</small></div><p>${esc(m.text)}</p><div class="answer-context">${tag(m.context.region)}${tag(m.context.period)}${m.context.type ? tag(m.context.type) : ""}</div>${rows.length ? `<div class="answer-resources">${rows.map((r) => `<div class="answer-resource"><span class="tile">${icon(typeIcon(r.type))}</span><div><button class="text-button" data-action="resource" data-id="${r.id}">${esc(r.name)}</button><small>${esc(r.type)} · ${esc(r.region)} · ${esc(r.frequency)}更新</small></div>${tag(r.access)}${btn("详情", "resource", r.id, "small")}${r.access === "可申请" ? btn(cart.includes(r.id) ? "已加入" : "加入清单", "addCart", r.id, "small") : ""}</div>`).join("")}</div>` : ""}${m.citations.map((c, i) => `<button class="citation" data-action="citation" data-id="${m.id}:${i}">${icon("book")}<span><b>[${i + 1}] ${esc(c.name)}</b><small>版本 v${c.version}.0 · 点击查阅引用片段</small></span>${icon("arrow")}</button>`).join("")}${m.indicators.map(renderIndicatorResult).join("")}${(m.templateRuns || []).map(resultTable).join("")}${m.trace ? traceView(m.trace) : ""}${m.canApply && rows.some(r => r.access === "可申请") ? btn("申请本次结果", "applyMessage", m.id, "primary", "file") : ""}<div class="answer-actions"><span>${fmt(m.at)}</span>${btn("复制", "copyAnswer", m.id, "text small", "copy")}${btn("反馈", "feedback", m.id, "text small", "message")}</div></div></div>`;
+  return `<div class="assistant-message"><span class="ai-avatar">${icon(agent.icon)}</span><div class="message-content"><div class="message-author">${esc(agent.name)} <small>v${m.agentVersion}.0</small></div><p>${esc(m.text)}</p><div class="answer-context">${answerContext(m)}${m.context.type ? tag(m.context.type) : ""}</div>${rows.length ? `<div class="answer-resources">${rows.map((r) => `<div class="answer-resource"><span class="tile">${icon(typeIcon(r.type))}</span><div><button class="text-button" data-action="resource" data-id="${r.id}">${esc(r.name)}</button><small>${esc(r.type)} · ${esc(r.region)} · ${esc(r.frequency)}更新</small></div>${tag(r.access)}${btn("详情", "resource", r.id, "small")}${r.access === "可申请" ? btn(cart.includes(r.id) ? "已加入" : "加入清单", "addCart", r.id, "small") : ""}</div>`).join("")}</div>` : ""}${m.citations.map((c, i) => `<button class="citation" data-action="citation" data-id="${m.id}:${i}">${icon("book")}<span><b>[${i + 1}] ${esc(c.name)}</b><small>版本 v${c.version}.0 · 点击查阅引用片段</small></span>${icon("arrow")}</button>`).join("")}${m.indicators.map(renderIndicatorResult).join("")}${(m.templateRuns || []).map(resultTable).join("")}${m.trace ? traceView(m.trace) : ""}${m.canApply && rows.some(r => r.access === "可申请") ? btn("申请本次结果", "applyMessage", m.id, "primary", "file") : ""}<div class="answer-actions"><span>${fmt(m.at)}</span>${btn("复制", "copyAnswer", m.id, "text small", "copy")}${btn("反馈", "feedback", m.id, "text small", "message")}</div></div></div>`;
+}
+function answerContext(m) {
+  const rows=(m.templateRuns||[]).find(r=>r.name?.startsWith('耕地数据对比'))?.rows;
+  return rows?.length ? [...new Set(rows.map(r=>r['地区']))].map(v=>tag(v)).join('')+[...new Set(rows.map(r=>r['年份']))].map(v=>tag(v)).join('') : tag(m.context.region)+tag(m.context.period);
 }
 function renderIndicatorResult(i) {
   const max = Math.max(...i.values, 1);
@@ -1185,7 +1179,7 @@ async function sendQuestion(question, context) {
   let targetAgent = selectedAgent;
   if (!sessionId && !resumeFrom && selectedAgent === "a1") {
     if (/什么是|政策|解释/.test(question)) targetAgent = "a2";
-    else if (/指标/.test(question)) targetAgent = "a3";
+    else if (/指标|耕地.*(?:面积|目标|达标|变化)|对比.*耕地/.test(question)) targetAgent = "a3";
   }
   const agent = D.agents.find((a) => a.id === targetAgent);
   if (!agent) return toast("该智能体已停用");
@@ -2018,12 +2012,12 @@ function renderPortalKnowledge(){
 async function portalAsk(question,agent){
   if(pending)return toast("请先等待当前回答完成，或进入助手停止本次响应");
   
-  selectedAgent=agent||(/什么是|政策|解释/.test(question)?"a2":/指标/.test(question)?"a3":"a1");sessionId="";resumeFrom="";closeModal();
+  selectedAgent=agent||(/什么是|政策|解释/.test(question)?"a2":/指标|耕地.*(?:面积|目标|达标|变化)|对比.*耕地/.test(question)?"a3":"a1");sessionId="";resumeFrom="";closeModal();
   if(route!=="assistant"){
     nav("/front/assistant");
     for(let i=0;i<60;i++){if(route==="assistant"&&$("#chat-form")&&window.appReady)break;await new Promise(r=>setTimeout(r,50));}
   }
-  await sendQuestion(question);
+  await sendQuestion(question,{region:"全区",period:"全部时间"});
 }
 async function portalAction(action,id,el){
   switch(action){

@@ -21,6 +21,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 from seed import seed, REGIONS, TYPES
 import capabilities as cap
+import qa_comparison
 import platform_domain as platform
 import platform_store
 import spatial
@@ -298,6 +299,11 @@ def chat(s,u,p):
             elif step=='示例试算':
                 if spatial_result and (spatial_result['context']['mode']!='region' or not any(w in q for w in ['指标','目标','达标'])):
                     trace['output']='当前为图斑查询，行政区指标不混入本次图斑统计';out['trace'].append(trace);continue
+                comparison=qa_comparison.compare(s,u,agent,q,ctx,REGIONS)
+                if comparison is not None:
+                    out['templateRuns'].append(comparison)
+                    answer='已按同一统计口径生成对比，请查看明细与差额。' if comparison['rows'] else comparison['answer']
+                    trace['output']=comparison;out['trace'].append(trace);continue
                 rows=scope_ids(active(s,'indicators'),agent,'indicatorIds');errors=[]
                 for row in rows:
                     if not cap.visible(u,row) or not any(w in row['name']+row.get('category','') for w in terms):continue
@@ -317,7 +323,7 @@ def chat(s,u,p):
                     parent_ids=cap.ids(agent.get(key));child_ids=cap.ids(child.get(key))
                     if parent_ids:child[key]=','.join(i for i in parent_ids if not child_ids or i in child_ids) or '__none__'
                 nested=run(child,chain+(agent['id'],))
-                out['citations']+=nested['citations'];out['indicators']+=nested['indicators'];out['resourceIds']=list(dict.fromkeys(out['resourceIds']+nested['resourceIds']))
+                out['templateRuns']+=nested['templateRuns'];out['citations']+=nested['citations'];out['indicators']+=nested['indicators'];out['resourceIds']=list(dict.fromkeys(out['resourceIds']+nested['resourceIds']))
                 if nested['text']:answer+='\n'+nested['text']
                 trace['children']=nested['trace'];trace['output']=dict(agent=child['name'],resources=len(nested['resourceIds']),citations=len(nested['citations']),indicators=len(nested['indicators']))
             elif step=='执行语料模板':
@@ -342,6 +348,12 @@ def chat(s,u,p):
                     answer=cap.render_template(template['outputTemplate'],params)+ ('\n'+answer if answer else '')
                     out['trace'].append(dict(step='应用提示词',agent=agent['name'],status='完成',input=cap.render_template(template['body'],params),output=answer,version=template['version']))
                 elif not answer:answer=f"找到 {len(names)} 项相关资源，可查看详情或申请使用。"
+        if display and '检索资源' in agent['steps'] and not answer:
+            service_terms={'estate':'不动产|房产|权属','progress':'进度|办件|审批','guide':'数据申请|材料|流程'}
+            guides=[r for r in public_portal.active(s.get('publicPortal',{}).get('services',[])) if re.search(service_terms.get(r['id'],r'(?!)'),q)]
+            if guides:
+                answer='\n\n'.join(r['name']+'：'+r['body']+'\n来源：'+r['source']+'（演示）' for r in guides)
+                out['trace'].append(dict(step='查阅已发布办事指南',status='完成',input=q,output=[r['id'] for r in guides]))
         if not display:out.update(resourceIds=[],citations=[],indicators=[],templateRuns=[],canApply=False);answer='执行已结束，编排未配置结果展示节点。'
         out['text']=answer.strip() or ('模板已执行，请查看结果。' if out['templateRuns'] else '暂未找到匹配内容。请调整区域、时间或业务关键词。')
         return out
