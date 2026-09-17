@@ -1,0 +1,11 @@
+/* Public-page guide, handing spatial requests to the shared map workspace. */
+(()=>{
+ const mapEntry=document.currentScript?.dataset.mapEntry||'index.html';
+ const trigger=document.createElement('button');trigger.className='guide-trigger';trigger.textContent='✧ 智能助手';trigger.setAttribute('aria-label','唤起智能助手');trigger.setAttribute('aria-expanded','false');
+ const dock=document.createElement('aside');dock.className='guide-dock';dock.hidden=true;dock.setAttribute('aria-label','全局智能助手');dock.innerHTML='<header><div><small>YOUR SPATIAL COPILOT</small><h2>一张图助手</h2></div><button aria-label="收起智能助手">×</button></header><p>从这里快速找到资源、工具与服务。空间查询可以携带问题进入地图继续。</p><div class="guide-quick"><button data-guide="如何申请数据">如何申请数据</button><button data-guide="如何分析范围">如何分析范围</button><button data-guide="查询呼和浩特市的永久基本农田">查询基本农田</button></div><div class="guide-answer" aria-live="polite">本地使用引导 · 空间分析在地图工作台执行。</div><form><label for="guide-question">告诉我你想做什么</label><input id="guide-question" required placeholder="如：打开耕地保护场景"><button type="submit">继续 ↗</button></form>';
+ document.body.append(dock,trigger);const answer=dock.querySelector('.guide-answer'),input=dock.querySelector('input');
+ const toggle=()=>{dock.hidden=!dock.hidden;trigger.setAttribute('aria-expanded',String(!dock.hidden));if(!dock.hidden)input.focus()};trigger.onclick=toggle;dock.querySelector('header button').onclick=toggle;
+ const respond=q=>{answer.replaceChildren();const p=document.createElement('p'),link=document.createElement('a');if(/如何.*申请|怎么.*申请/.test(q)){p.textContent='在资源中心查找图层，查看元数据并预览，再填写用途、区域和使用期限。审核通过后可下载对应示例数据。';link.textContent='进入资源中心 ↗';link.href=mapEntry+'#resources';}else if(/如何.*分析|怎么.*分析/.test(q)){p.textContent='进入工具中心绘制范围，完成后查询相交对象；也可选中对象，唤起助手查询周边。结果与地图、属性表同步。';link.textContent='打开空间工具 ↗';link.href=mapEntry+'#tools';}else{p.textContent='已准备将这个问题交给地图工作台的全局助手：'+q;link.textContent='携带问题进入地图 ↗';link.href=mapEntry+'?ask='+encodeURIComponent(q)+'#map';}answer.append(p,link)};
+ dock.querySelectorAll('[data-guide]').forEach(b=>b.onclick=()=>respond(b.dataset.guide));dock.querySelector('form').onsubmit=e=>{e.preventDefault();const q=input.value.trim();if(q)respond(q)};
+ document.addEventListener('keydown',e=>{if(e.altKey&&e.code==='KeyA'){e.preventDefault();toggle()}if(e.key==='Escape'&&!dock.hidden)toggle()});
+})();

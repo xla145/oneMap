@@ -737,6 +737,16 @@ class Handler(SimpleHTTPRequestHandler):
             return
         if path in ['/','/index.html','/app.js','/style.css','/assets/inner-mongolia.geojson'] or (path.startswith('/frontend/') and Path(path).suffix in ['.js','.css'] and '..' not in path and (ROOT/path.lstrip('/')).resolve().is_relative_to(ROOT/'frontend')):
             return super().do_GET()
+        # New map-first workspace: only its bundled static assets are exposed.
+        if path.startswith('/gis/'):
+            from urllib.parse import unquote
+            decoded = unquote(path)
+            target = (ROOT / decoded.lstrip('/')).resolve()
+            gis_root = (ROOT / 'gis').resolve()
+            allowed_suffixes = {'.html', '.js', '.css', '.json', '.geojson', '.png', '.jpg', '.webp', '.svg', '.md', '.csv'}
+            if '..' not in decoded.split('/') and target.is_relative_to(gis_root) and target.is_file() and target.suffix.lower() in allowed_suffixes:
+                return super().do_GET()
+            return self.send_error(404)
         if path.startswith('/assets/nmg-demo/') and Path(path).suffix in ['.html','.js','.json','.geojson','.png'] and '..' not in path and (ROOT/path.lstrip('/')).resolve().is_relative_to(ROOT/'assets'/'nmg-demo'):
             return super().do_GET()
         if path.startswith('/assets/previews/') and Path(path).suffix == '.svg' and '..' not in path and (ROOT/path.lstrip('/')).resolve().is_relative_to(ROOT/'assets'/'previews'):

@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
+    <!-- oneMap GIS default entry: preserve existing front/admin hash routes -->
+    <script>
+      const gisEntryRoutes = ["", "#map", "#resources", "#tools", "#scenes", "#ai", "#tasks", "#operations"];
+      if (gisEntryRoutes.includes(location.hash)) location.replace("gis/index.html" + location.search + (location.hash || "#map"));
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>一张图</title>
@@ -25,6 +31,8 @@
     <link rel="stylesheet" href="/frontend/results-workspace.css?v=20260916-map-workspace-r7" />
     <link rel="stylesheet" href="/frontend/admin-blue.css?v=20260916-admin-blue-v1" />
     <link rel="stylesheet" href="/frontend/map-ai.css?v=20260916-ai-map" />
+    <link rel="stylesheet" href="gis/guide-assistant.css">
+    <script defer src="gis/guide-assistant.js" data-map-entry="gis/index.html"></script>
   </head>
   <body>
     <div id="app">

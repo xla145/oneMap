@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/test_*.mjs",
-    "build:map": "node scripts/build-map.mjs"
+    "build:map": "node scripts/build-map.mjs",
+    "test:gis": "node --test gis/test/spatial.test.cjs"
   },
   "dependencies": {
     "ol": "10.10.0"

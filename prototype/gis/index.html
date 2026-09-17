@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>一张图 · 内蒙古 | 自然资源空间工作台</title>
+  <meta name="description" content="以内蒙古自然资源地图为核心的业务交互原型。">
+  <link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css"><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header class="app-header">
+    <a class="brand" href="#map" aria-label="一张图内蒙古首页"><span class="brand-mark">◈</span><span><strong>一张图<span class="brand-dot"> · </span>内蒙古</strong><small>NATURAL RESOURCES · INNER MONGOLIA</small></span></a>
+    <nav id="main-nav" aria-label="主导航"></nav>
+    <div class="header-actions"><a href="portal.html" class="portal-link">公众门户 ↗</a><button class="avatar" id="identity" title="演示身份与使用说明" aria-label="演示身份与使用说明">蒙</button></div>
+  </header>
+  <div class="context-bar">
+    <button id="toggle-sidebar" class="icon-button" aria-label="展开或收起目录"></button>
+    <div class="region-control"><span id="pin-icon"></span><select id="region" aria-label="行政区划"><option value="">内蒙古自治区</option></select></div>
+    <span class="context-divider"></span>
+    <form id="global-search" class="global-search"><span id="search-icon"></span><input id="search-input" aria-label="搜索地名、图层或对象" placeholder="搜索地名、图层或对象"><button type="submit" aria-label="执行搜索">搜索</button></form>
+    <div class="context-end"><span class="demo-status"><i></i>本地演示数据</span><button id="bookmarks" class="text-button">视图书签</button><a class="text-button" href="requirements.html">需求与原型 ↗</a></div>
+  </div>
+  <main class="workspace">
+    <aside class="sidebar" id="sidebar" aria-label="功能目录"></aside>
+    <section class="map-workspace" aria-label="地图工作空间">
+      <div id="map" aria-label="内蒙古交互地图"></div>
+      <div class="map-heading"><span class="eyebrow">INNER MONGOLIA</span><h1 id="map-title">自然资源一张图</h1><p id="map-subtitle">山水林田湖草沙，在一张图上协同。</p></div>
+      <div class="map-top-actions"><button id="overview-toggle" class="floating-button"></button><button id="reset-view" class="floating-button"></button></div>
+      <div class="map-tools" id="map-tools" aria-label="地图工具"></div>
+      <div class="north-indicator" aria-hidden="true"><span>N</span><svg width="24" height="32" viewBox="0 0 24 32"><path d="M12 1 23 29 12 22Z" fill="#74847b"/><path d="M12 1 1 29 12 22Z" fill="#183e34"/></svg></div>
+      <div id="drawing-hint" class="drawing-hint" hidden></div>
+      <div class="map-legend" id="map-legend"></div>
+      <div class="basemap-switch" role="group" aria-label="底图切换"><button data-base="terrain" class="active"><span class="terrain-swatch"></span>自然地理</button><button data-base="light"><span class="light-swatch"></span>简洁底图</button></div>
+      <aside id="inspector" class="inspector" aria-label="详情面板" hidden></aside>
+      <aside id="assistant-dock" class="assistant-dock" aria-label="全局智能助手" hidden></aside>
+      <button id="assistant-trigger" class="assistant-trigger" aria-label="唤起智能助手" aria-expanded="false" aria-controls="assistant-dock"></button>
+      <section class="results" id="results" aria-label="查询结果" hidden></section>
+      <div class="map-status"><span id="coords">经度 111.6700°　纬度 43.8000°</span><span>本地地形 / 行政区参考数据 · 业务要素为模拟示例</span><button id="results-toggle">打开属性表 ↑</button></div>
+    </section>
+  </main>
+</div>
+<dialog id="modal" aria-labelledby="modal-title"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="assets/vendor/leaflet/leaflet.js"></script><script src="data/map-data.js"></script><script src="spatial.js"></script><script src="app.js"></script>
+</body></html>
