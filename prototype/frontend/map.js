@@ -23,7 +23,7 @@ export function measureRing(coordinates) {
   return Math.abs(area)*6371008.8**2/2/10000;
 }
 
-export async function mountSceneMap(container,config,{onSelect=()=>{},onMeasure=()=>{},onSelectRange=()=>{},onMapClick=null,onViewChange=()=>{}}={}) {
+export async function mountSceneMap(container,config,{onSelect=()=>{},onMeasure=()=>{},onSelectRange=()=>{},onMapClick=null,onViewChange=()=>{},inspectEnabled=false}={}) {
   if(!container.isConnected)return;
   const baseOptions=[
     {id:'demo-img',name:'影像底图',category:'天地图',type:'img_w',label:'cia_w'},
@@ -46,7 +46,10 @@ export async function mountSceneMap(container,config,{onSelect=()=>{},onMeasure=
   const selectionLayer=new VectorLayer({source:selectionSource,style:new Style({stroke:new Stroke({color:'#276ce0',width:2,lineDash:[6,4]}),fill:new Fill({color:'rgba(39,108,224,.10)'}),image:new CircleStyle({radius:7,fill:new Fill({color:'#276ce0'}),stroke:new Stroke({color:'#fff',width:2})})}),zIndex:110});
   const resultSource=new VectorSource({wrapX:false});
   const resultLayer=new VectorLayer({source:resultSource,style:f=>new Style({image:new CircleStyle({radius:6,fill:new Fill({color:'#167968'}),stroke:new Stroke({color:'#fff',width:2})}),stroke:new Stroke({color:f===selected?'#8e4711':'#167968',width:f===selected?4:3}),fill:new Fill({color:'rgba(28,154,123,.28)'})}),zIndex:105});
-  map.addLayer(selectionLayer);map.addLayer(resultLayer);
+  const analysisSource=new VectorSource({wrapX:false});
+  const analysisLayer=new VectorLayer({source:analysisSource,zIndex:106});
+  const assistantLayers=new globalThis.Map();
+  map.addLayer(selectionLayer);map.addLayer(resultLayer);map.addLayer(analysisLayer);
   let selectionDraw=null;
   function setSelection(geometry){selectionSource.clear();if(geometry)selectionSource.addFeature(new GeoJSON().readFeature({type:'Feature',geometry,properties:{}},{dataProjection:projection,featureProjection:'EPSG:3857'}));}
   function startSelection(kind){
@@ -163,7 +166,7 @@ export async function mountSceneMap(container,config,{onSelect=()=>{},onMeasure=
   map.on('singleclick',event=>{
     if(drawing)return;
     if(onMapClick?.(toLonLat(event.coordinate)))return;
-    if(!config.widgets.some(w=>w.code==='query'))return;
+    if(!inspectEnabled&&!config.widgets.some(w=>w.code==='query'))return;
     const feature=map.forEachFeatureAtPixel(event.pixel,f=>f.get('record')?f:undefined,{hitTolerance:5});
     selected=feature||null;businessLayers.forEach(layer=>layer.changed());resultLayer.changed();
     if(feature)onSelect({...feature.get('record'),layer:config.layers.find(l=>l.id===feature.get('layerId'))});
@@ -175,6 +178,17 @@ export async function mountSceneMap(container,config,{onSelect=()=>{},onMeasure=
   return {
     locate(region){const city=cities.find(c=>c[0]===region);if(city){view.setCenter(fromLonLat(city.slice(1)));view.setZoom(8);}else fitBounds(config.extent||[96,36,127,54]);},
     setLayers,fitBounds,setSelection,startSelection,
+    setAssistantFeatures(key,items){
+      let layer=assistantLayers.get(key);
+      if(!layer){layer=new VectorLayer({source:new VectorSource({wrapX:false}),zIndex:108,style:new Style({image:new CircleStyle({radius:7,fill:new Fill({color:'#7055ce'}),stroke:new Stroke({color:'#fff',width:2})}),stroke:new Stroke({color:'#7055ce',width:3}),fill:new Fill({color:'#7055ce35'})})});assistantLayers.set(key,layer);map.addLayer(layer);}
+      layer.getSource().clear();
+      layer.getSource().addFeatures(items.filter(x=>x.geometry).map(item=>{const f=format.readFeature(item,{dataProjection:'EPSG:4326',featureProjection:'EPSG:3857'});f.setProperties({record:{...item.properties,id:item.properties.id,geometry:item.geometry,coordinates:[],aiQueryId:key,area:item.properties.area_ha,unit:'公顷',layerName:item.properties.layer_name},layerId:'ai:'+key});return f;}));
+      layer.setVisible(true);
+    },
+    locateAssistantFeature(key,id){const layer=assistantLayers.get(key);if(!layer)return;layer.setVisible(true);for(const f of layer.getSource().getFeatures()){const match=f.get('record')?.id===id;f.setStyle(match?new Style({image:new CircleStyle({radius:10,fill:new Fill({color:'#f2b544'}),stroke:new Stroke({color:'#fff',width:2})}),stroke:new Stroke({color:'#f2b544',width:5}),fill:new Fill({color:'#f2b54455'})}):undefined);if(match){view.fit(f.getGeometry().getExtent(),{padding:[60,60,60,60],maxZoom:15});selected=f;onSelect({...f.get('record')});}}},
+    setAssistantVisible(key,visible){assistantLayers.get(key)?.setVisible(visible);},
+    removeAssistantLayer(key){const l=assistantLayers.get(key);if(l){map.removeLayer(l);l.dispose();assistantLayers.delete(key);}},
+    cancelSelection(){draw.abortDrawing();if(selectionDraw){map.removeInteraction(selectionDraw);selectionDraw=null;}setDrawing(false);},
     north(){view.setRotation(0);},
     clearGraphics(){draw.abortDrawing();if(selectionDraw){map.removeInteraction(selectionDraw);selectionDraw=null;}setDrawing(false);drawSource.clear();selectionSource.clear();resultSource.clear();selected=null;businessLayers.forEach(l=>l.changed());},
     fitLayer(id){const layer=businessLayers.get(id);if(!layer?.getSource().getFeatures().length)return false;view.fit(layer.getSource().getExtent(),{padding:[50,50,80,50],maxZoom:12});return true;},
@@ -182,8 +196,8 @@ export async function mountSceneMap(container,config,{onSelect=()=>{},onMeasure=
     locateRegion(level,id){const feature=demoMapData[level]?.features.find(f=>String(f.properties.adcode)===String(id));if(!feature)return false;const f=format.readFeature(feature,{dataProjection:'EPSG:4326',featureProjection:'EPSG:3857'});view.fit(f.getGeometry().getExtent(),{padding:[40,40,70,40],maxZoom:13});return true;},
     fitGeometry(geojson){const features=format.readFeatures(geojson,{dataProjection:'EPSG:4326',featureProjection:'EPSG:3857'});const source=new VectorSource({features});if(features.length)view.fit(source.getExtent(),{padding:[45,45,45,45],maxZoom:15});},
     setAnalysisFeatures(features){
-      resultSource.clear();
-      for(const item of features){if(!item.geometry)continue;const f=format.readFeature(item,{dataProjection:'EPSG:4326',featureProjection:'EPSG:3857'});const color=item.properties?.kind==='conflict'?'#c43a36':item.properties?.kind==='input'?'#276ce0':'#c78a26';f.setStyle(new Style({stroke:new Stroke({color,width:2}),fill:new Fill({color:color+'30'})}));f.set('record',{id:item.properties?.id||'',name:item.properties?.name||item.properties?.rule||'',coordinates:[],layerId:'analysis'});resultSource.addFeature(f);}
+      analysisSource.clear();
+      for(const item of features){if(!item.geometry)continue;const f=format.readFeature(item,{dataProjection:'EPSG:4326',featureProjection:'EPSG:3857'});const color=item.properties?.kind==='conflict'?'#c43a36':item.properties?.kind==='input'?'#276ce0':'#c78a26';f.setStyle(new Style({image:new CircleStyle({radius:6,fill:new Fill({color}),stroke:new Stroke({color:'#fff',width:2})}),stroke:new Stroke({color,width:2}),fill:new Fill({color:color+'30'})}));f.set('record',{id:item.properties?.id||'',name:item.properties?.name||item.properties?.rule||'',geometry:item.geometry,coordinates:[],layerId:'analysis'});analysisSource.addFeature(f);}
     },
     setResultFeatures(records){
       resultSource.clear();resultSource.addFeatures(records.map(record=>{

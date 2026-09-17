@@ -125,7 +125,7 @@ def catalog(s,u):
         if v and r.get('listed') and cap.visible(u,v):rows.append(dict(id='app:'+r['id'],name=v['name'],kind='应用场景',category=v.get('category',''),target='/front/app-center/'+r['id'],updated=v.get('updated','')))
     for r in pm.migrate(s)['tools']:
         v=cap.published(r)
-        if v and pm.can_tool(u,v):rows.append(dict(id='tool:'+r['id'],name=v['name'],kind='工具',category=v.get('category',''),target='/front/capabilities/'+r['id'],updated=v.get('updated','')))
+        if v and pm.can_tool(u,v,s):rows.append(dict(id='tool:'+r['id'],name=v['name'],kind='工具',category=v.get('category',''),target='/front/capabilities/'+r['id'],updated=v.get('updated','')))
     return rows
 
 def bootstrap(s,u,mode):
@@ -459,7 +459,7 @@ def service_query(s,u,p):
     return dict(total=len(rows),page=page,size=50,rows=rows[(page-1)*50:page*50],resourceVersion=r['version'])
 
 def tool_signature(r):
-    return digest(json.dumps({k:v for k,v in r.items() if k in ['name','category','description','engine','url','audience','resourceId','provider','apiDescription','inputExample','outputDescription']},ensure_ascii=False,sort_keys=True))
+    return digest(json.dumps({k:v for k,v in r.items() if k in ['name','category','description','engine','url','audience','resourceId','provider','publisher','apiDescription','inputExample','outputDescription','requestParameters','outputExample','directoryId','region','interfaceType','module','usageMode','screenshot']},ensure_ascii=False,sort_keys=True))
 
 def tool_action(s,u,op,p):
     c=migrate(s);tools=pm.migrate(s)['tools']
@@ -502,11 +502,8 @@ def run_tool(s,r,p):
     from shapely.validation import explain_validity
     from pyproj import Transformer
     engine=r['engine']
-    if engine=='coordinate':
-        source=p.get('source','EPSG:4326');target=p.get('target','EPSG:3857');require(source in ['EPSG:4326','EPSG:3857'] and target in ['EPSG:4326','EPSG:3857'],'支持4326和3857投影转换')
-        x=p.get('x');y=p.get('y');require(all(type(v) in [float,int] and math.isfinite(v) for v in [x,y]),'坐标需为有限数值')
-        require((abs(x)<=180 and abs(y)<=85) if source=='EPSG:4326' else (abs(x)<=20037508.35 and abs(y)<=19971868.89),'坐标超出可转换范围')
-        out=Transformer.from_crs(source,target,always_xy=True).transform(x,y);return dict(source=source,target=target,x=out[0],y=out[1])
+    import prototype.test.tool_center as tc
+    if engine=='coordinate':return tc.coordinate(p)
     if engine=='buffer':
         lon=p.get('x');lat=p.get('y');distance=p.get('distance',100)
         require(all(type(v) in [int,float] and math.isfinite(v) for v in [lon,lat,distance]) and abs(lon)<=180 and abs(lat)<=85 and 0<distance<=100000,'请输入有效经纬度及1～100000米缓冲距离')
@@ -514,31 +511,41 @@ def run_tool(s,r,p):
         local=f'+proj=aeqd +lat_0={lat} +lon_0={lon} +datum=WGS84 +units=m'
         forward=Transformer.from_crs('EPSG:4326',local,always_xy=True).transform;back=Transformer.from_crs(local,'EPSG:4326',always_xy=True).transform
         geometry=transform(back,transform(forward,Point(lon,lat)).buffer(distance,resolution=32));return dict(type='Feature',geometry=mapping(geometry),properties={'distanceMeters':distance})
-    if engine=='spatial-check':
-        value=p.get('geometry');require(isinstance(value,dict),'请提供 geometry 对象')
-        g=shape(value);require(g.geom_type in ['Polygon','MultiPolygon'] and not g.is_empty,'需为非空面几何')
-        return dict(valid=g.is_valid,reason=explain_validity(g),bounds=list(g.bounds),scope='几何拓扑检查，不代替行政区及测绘标准校验')
+    if engine=='spatial-check':return tc.check(p)
     if engine in ['spatial-store','spatial-edit','spatial-query']:
         key=text(p.get('resourceId',''));resource=cap.find(s['resources'],key);require(resource and resource['type']=='图层服务','请选择图层资源作为本地工作图层')
         layers=migrate(s).setdefault('spatialLayers',{});layer=layers.setdefault(key,dict(rev=1,features=[]))
         if engine=='spatial-query':
-            q=text(p.get('q',''));rows=[x for x in layer['features'] if q in json.dumps(x.get('properties',{}),ensure_ascii=False)];return dict(type='FeatureCollection',features=deepcopy(rows),revision=layer['rev'],scope='本地工具工作图层')
+            q=text(p.get('q','')).casefold();region=text(p.get('region',''));coordinate=p.get('coordinate');point=None
+            if coordinate is not None:
+                require(isinstance(coordinate,list) and len(coordinate)==2 and all(type(v) in (int,float) and math.isfinite(v) for v in coordinate),'定位坐标应为两个有限数值')
+                point=tc.project(Point(coordinate),p.get('crs','EPSG:4326'),'EPSG:4326')
+            rows=[x for x in layer['features'] if q in json.dumps(x.get('properties',{}),ensure_ascii=False).casefold() and (not region or region==x.get('properties',{}).get('region')) and (point is None or shape(x['geometry']).covers(point))]
+            return dict(type='FeatureCollection',features=deepcopy(rows),total=len(rows),revision=layer['rev'],scope='本地工具工作图层')
         require(p.get('revision')==layer['rev'],'工作图层版本已变化，请先查询获取最新版本',409)
-        fid=text(p.get('featureId',''),100);require(fid,'要素标识必填');old=next((x for x in layer['features'] if x['id']==fid),None)
+        fid=text(p.get('featureId',''),100)
+        if engine=='spatial-edit' and not fid:
+            name=text(p.get('name',''),100);matches=[x for x in layer['features'] if name and x.get('properties',{}).get('name')==name]
+            require(len(matches)==1,'名称不存在或不唯一，请使用要素 ID');fid=matches[0]['id']
+        require(fid,'要素标识必填');old=next((x for x in layer['features'] if x['id']==fid),None)
+        if engine=='spatial-edit':require(p.get('operation','update') in ['update','delete'],'编辑操作应为 update 或 delete')
         if engine=='spatial-edit' and p.get('operation')=='delete':require(old,'要素不存在');layer['features'].remove(old)
         else:
-            features=ae.normalize(p.get('geometry'),p.get('crs','EPSG:4326'))['features'];require(len(features)==1,'一次写入一个图形')
-            geom=features[0]['geometry'];props=json_value(p.get('properties',{}),dict);require(len(json.dumps(props))<=10000,'属性过长')
+            features=tc.normalize(p.get('geometry'),p.get('crs','EPSG:4326'))['features'];require(len(features)==1,'一次写入一个图形')
+            geom=features[0]['geometry'];props=json_value(p.get('properties',(old or {}).get('properties',{})),dict);require(len(json.dumps(props))<=10000,'属性过长')
             if engine=='spatial-store':require(not old and len(layer['features'])<1000,'要素已存在或工作图层超过1000项')
             else:require(old,'要素不存在')
             value=dict(type='Feature',id=fid,geometry=geom,properties=props)
+            if tc.datum_note(p.get('crs','EPSG:4326')):value['coordinateNote']=tc.datum_note(p.get('crs','EPSG:4326'))
             if old:layer['features'][layer['features'].index(old)]=value
             else:layer['features'].append(value)
-        layer['rev']+=1;return dict(revision=layer['rev'],count=len(layer['features']),scope='仅变更本地工具工作图层，未写入生产GIS')
-    data=ae.normalize(p.get('geometry'),p.get('crs','EPSG:4326'))
-    if engine=='compliance':return ae.analyze(data,ae.catalog())
-    if engine in ['area','overlay']:return ae.spatial_tool(data,'area' if engine=='area' else p.get('operation','intersection'))
-    raise Invalid('不支持的执行能力')
+        layer['rev']+=1;return dict(revision=layer['rev'],count=len(layer['features']),scope='仅变更本地工具工作图层，未写入生产GIS',coordinateNote=tc.datum_note(p.get('crs','EPSG:4326')))
+    data=tc.normalize(p.get('geometry'),p.get('crs','EPSG:4326'))
+    if engine=='compliance':output=ae.analyze(data,ae.catalog())
+    elif engine in ['area','overlay']:output=ae.spatial_tool(data,'area' if engine=='area' else p.get('operation','intersection'),p.get('distance',0))
+    else:raise Invalid('不支持的执行能力')
+    if data.get('coordinateNote'):output['coordinateNote']=data['coordinateNote']
+    return output
 
 
 def todo_counts(rows):

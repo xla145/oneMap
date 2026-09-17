@@ -1,6 +1,6 @@
 """Exercise the real map and scene lifecycle on isolated QA storage."""
 import json
-import check_integration_browser as b
+import prototype.test.check_integration_browser as b
 b.SESSION='integration-map'
 
 def map_click(dx=0,dy=0):

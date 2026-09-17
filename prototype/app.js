@@ -1,17 +1,18 @@
+import {createBootstrapCache} from './frontend/bootstrap-cache.js?v=20260917-1';
 import {createOperationsCenter,operationMenu,operationLabels} from './frontend/operations-center.js?v=20260916-ops5';
 import {integrationNav,legacyIntegration} from './frontend/integration-routes.js';
 import {createIntelligenceAdmin} from './frontend/intelligence-admin.js?v=20260916-ops5';
 import {indexState} from './frontend/intelligence-links.js';
 import {integrationSections} from './frontend/integration-admin.js?v=20260916-results-round2-final';
-import { createIntegration } from './frontend/integration.js?v=20260916-map-workspace';
+import { createIntegration } from './frontend/integration.js?v=20260917-properties-1';
 import { createCenters } from './frontend/centers.js?v=20260916-centers';
 import { createPortalOperations } from './frontend/portal-operations.js';
 import { createPortalAdmin } from './frontend/portal-admin.js?v=20260916-intelligence-links';
-import { createPublicPortal } from './frontend/public-portal.js?v=design-20260916';
+import { createPublicPortal } from './frontend/public-portal.js?v=20260916-direct-use';
 import { renderNews, newsCategory, newsCategories, searchNews, recommendedNews, newsDownloadText } from './frontend/news.js?v=20260915-1';
 import { previewSource } from './frontend/previews.js';
 import { randomUUID } from './frontend/uuid.js';
-import { createPlatform } from './frontend/platform.js?v=20260916-results-round2-final';
+import { createPlatform } from './frontend/platform.js?v=20260916-workspace-apps-r2';
 const $ = (s) => document.querySelector(s),
   $$ = (s) => [...document.querySelectorAll(s)];
 const esc = (v) =>
@@ -122,7 +123,7 @@ let D,
   modalFocus,
   adminTab = "";
 let requestKey = randomUUID();
-const platformUI = createPlatform({
+const platformUI = createPlatform({navigateEmbedded:path=>route==='integration-results'&&integrationUI.navigateApplication(path),
   $, esc, icon, btn, tag, fmt, modal, closeModal, toast, api, nav, empty,
   state: () => ({D, mode, route, id: routeId}),
   render: () => renderPage(),
@@ -132,6 +133,7 @@ const platformUI = createPlatform({
   agentCard: a => agentCard(a),
   identity: (id,resultPermissions={}) => {
     pending?.controller.abort();pending=null;
+    bootstrapCache.invalidate();
     sessionStorage.setItem('onemap-user',id);
     sessionStorage.setItem('intelligence-front',id);
     sessionStorage.setItem('intelligence-admin',id);
@@ -141,6 +143,7 @@ const platformUI = createPlatform({
     else routeChange();
   },
   launch: async (question, context={}, agent='a1') => {
+    if(route==='integration-results'&&integrationUI.launchInWorkspace(agent,context,question))return;
     pending?.controller.abort();pending=null;
     businessContext=Object.keys(context).length?context:null;
     selectedAgent=agent;sessionId='';resumeFrom='';closeModal();
@@ -153,7 +156,7 @@ const platformUI = createPlatform({
 const operationsCenterUI = createOperationsCenter({$,esc,btn,tag,api,modal,closeModal,toast,state:()=>({D,mode,route}),load:()=>load(),reload:async()=>{await load();renderPage();}});
 const operationsUI = createPortalOperations({$,esc,icon,btn,tag,api,modal,closeModal,toast,state:()=>({D,mode,route}),loadOnly:()=>load(),reload:async()=>{await load();renderPage();}});
 const managementUI = createPortalAdmin({$,esc,icon,btn,tag,api,nav,modal,closeModal,toast,state:()=>({D,mode,route,id:routeId}),reload:async()=>{await load();renderPage();}});
-const integrationUI = createIntegration({$,esc,icon,btn,tag,api,nav,canAdminRoute:key=>permittedAdminNav().some(n=>n[0]===key),modal,closeModal,toast,perform:(a,id)=>perform(a,id),loadOnly:()=>load(),state:()=>({D,mode,route,id:routeId}),reload:async()=>{await load();renderPage();}});
+const integrationUI = createIntegration({renderApplicationCase:(host,id)=>platformUI.renderCase(host,id),$,esc,icon,btn,tag,api,nav,canAdminRoute:key=>permittedAdminNav().some(n=>n[0]===key),modal,closeModal,toast,perform:(a,id)=>perform(a,id),loadOnly:()=>load(),state:()=>({D,mode,route,id:routeId}),reload:async()=>{await load();renderPage();}});
 const centersUI = createCenters({$,esc,icon,btn,tag,api,nav,modal,closeModal,toast,state:()=>({D,mode,route,id:routeId}),reload:async()=>{await load();renderPage();}});
 const intelligenceUI = createIntelligenceAdmin({esc,btn,heading,tag,nav,state:()=>({D,mode,route}),allowed:()=>permittedAdminNav(),perform:(a,id)=>perform(a,id),edit:editor,evaluate:evaluationsDialog,resourceTab:id=>designAction('design-tab',id)});
 const publicUI = createPublicPortal({$,esc,icon,btn,tag,api,nav,modal,closeModal,toast, state:()=>({D,mode,route,id:routeId}), cart:()=>cart, landscape:()=>portalLandscape(), loadOnly:()=>load(), reload:async()=>{await load();renderPage();}});
@@ -231,13 +234,34 @@ const meta = {
   templates: ["元数据模板", "统一资源描述结构与字段要求。", "file"],
   dictionaries: ["枚举字典", "维护编码、名称与业务别名。", "book"],
 };
+const bootstrapCache = createBootstrapCache();
+// These reads/telemetry do not change the bootstrap business snapshot.
+const bootstrapReads = new Set(['portal.visit', 'integration.results.map.runtime',
+  'integration.map.query', 'integration.results.stats', 'mapRuntime', 'public.map',
+  'platform.sceneRuntime', 'integration.preview', 'integration.search',
+  'integration.inspect', 'integration.monitor', 'integration.versions',
+  'integration.workbench', 'portal.monitor', 'portal.report', 'portal.securityGet',
+  'analysis.catalog', 'analysis.get', 'analysis.list', 'integration.ai.history',
+  'integration.ai.result']);
 async function api(action, payload = {}, signal) {
+  if (!action) return getBootstrap(true);
+  const invalidates = !bootstrapReads.has(action);
+  if (invalidates) bootstrapCache.invalidate();
+  try { return await requestAPI(action, payload, signal); }
+  finally { if (invalidates) bootstrapCache.invalidate(); }
+}
+function getBootstrap(force = false) {
+  const identity = {userId, mode};
+  return bootstrapCache.get(JSON.stringify(identity),
+    () => requestAPI(null, {}, undefined, identity), {force});
+}
+async function requestAPI(action, payload = {}, signal, identity = {userId, mode}) {
   const r = await fetch(action ? "/api/action" : "/api/bootstrap", {
     method: action ? "POST" : "GET",
     headers: {
       "Content-Type": "application/json",
-      "X-Demo-User": userId,
-      "X-Demo-Mode": mode,
+      "X-Demo-User": identity.userId,
+      "X-Demo-Mode": identity.mode,
     },
     body: action ? JSON.stringify({ action, payload }) : undefined,
     signal,
@@ -252,8 +276,11 @@ function toast(text) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => ($("#toast").hidden = true), 4000);
 }
-async function load() {
-  D = await api();
+async function load(force = true) {
+  const owner = userId, scope = mode, version = routeVersion;
+  const fresh = await getBootstrap(force);
+  if (owner !== userId || scope !== mode || version !== routeVersion) return;
+  D = fresh;
   cart = cart.filter((id) =>
     D.resources.some((r) => r.id === id && r.access === "可申请"),
   );
@@ -281,14 +308,14 @@ function adminMenu(navs){
     ['system','平台管理','settings',['identity','portal-roles','gateway','portal-security','settings']]
   ];
   const labels={...operationLabels,...Object.fromEntries(integrationSections.map(([key,label])=>['center-integration?tab='+key,label])),'public-portal?tab=settings':'公众门户首页配置','public-portal?tab=services':'办事服务管理','public-portal?tab=tickets':'咨询与公众意见','public-portal?tab=topics':'大美内蒙古专题','resources':'资源与元数据','settings':'基础与演示设置'};
-  const item=key=>{const n=navs.find(n=>n[0]===key.split('?')[0].split('/')[0]);return n?`<a href="#/admin/${key}" class="${current===key?'active':''}" ${current===key?'aria-current="page"':''}>${icon(n[2])}<span>${esc(labels[key]||n[1])}${key==='portal-monitor'&&D.portalManagement?.activeAlerts?' · '+D.portalManagement.activeAlerts+' 项告警':''}</span></a>`:'';};
+  const item=key=>{const n=navs.find(n=>n[0]===key.split('?')[0].split('/')[0]);return n?`<a href="#/admin/${key}" class="${current===key?'active':''}" aria-label="${esc(labels[key]||n[1])}" title="${esc(labels[key]||n[1])}" ${current===key?'aria-current="page"':''}>${icon(n[2])}<span>${esc(labels[key]||n[1])}${key==='portal-monitor'&&D.portalManagement?.activeAlerts?' · '+D.portalManagement.activeAlerts+' 项告警':''}</span></a>`:'';};
   const last=sessionStorage.getItem('onemap-admin-menu-route');sessionStorage.setItem('onemap-admin-menu-route',current);
   const containsCurrent=items=>items.some(entry=>Array.isArray(entry)?containsCurrent(entry[3]):entry===current);
   const group=([key,name,i,items])=>{
     const links=items.map(entry=>Array.isArray(entry)?group(entry):item(entry)).join('');
     if(!links)return '';
     const active=containsCurrent(items),open=(active&&last!==current)||saved[key]===true||(saved[key]===undefined&&(active||(['portal','data'].includes(key)&&route==='overview')));
-    return `<details class="admin-nav-group ${active?'contains-active':''}" data-menu-group="${key}" ${open?'open':''}><summary>${icon(i)}<span>${name}</span><span class="nav-caret">${icon('chevron')}</span></summary><div class="admin-submenu">${links}</div></details>`;
+    return `<details class="admin-nav-group ${active?'contains-active':''}" data-menu-group="${key}" ${open?'open':''}><summary aria-label="${esc(name)}" title="${esc(name)}">${icon(i)}<span>${name}</span><span class="nav-caret">${icon('chevron')}</span></summary><div class="admin-submenu">${links}</div></details>`;
   };
   return item('overview')+groups.map(group).join('');
 }
@@ -303,6 +330,7 @@ document.addEventListener('toggle',e=>{
 },true);
 function shell() {
   document.body.classList.toggle("portal-mode", mode === "front");
+  document.body.classList.toggle("admin-mode", mode !== "front");
   document.body.classList.remove("portal-menu-open");
   if (mode === "front") return portalShell();
   const navs = mode === 'admin' ? permittedAdminNav() : frontNav;
@@ -1235,10 +1263,6 @@ async function perform(action, id, el) {
     case "refresh":
       await load();
       shell();
-    const back=sessionStorage.getItem('ig-return-'+D.user.id);
-    if(back&&/^#\/admin\/integration-(results|resources|workbench)(\?|$)/.test(back)&&!route.startsWith('integration-')&&document.querySelector('#main')){
-      document.querySelector('#main').insertAdjacentHTML('afterbegin',`<a class="ig-return-link" href="${esc(back)}">返回综合集成工作空间</a>`);
-    }
       toast("数据已更新");
       break;
     case "notifications":
@@ -1258,6 +1282,10 @@ async function perform(action, id, el) {
       break;
     case "preview":
       previewResource(id);
+      break;
+    case "tc-apply":
+      if(!cart.includes(id))cart.push(id);
+      cartDialog();
       break;
     case "addCart":
       if (!cart.includes(id)) cart.push(id);
@@ -1763,10 +1791,6 @@ function bindForms() {
     cart = [];
     closeModal();
     shell();
-    const back=sessionStorage.getItem('ig-return-'+D.user.id);
-    if(back&&/^#\/admin\/integration-(results|resources|workbench)(\?|$)/.test(back)&&!route.startsWith('integration-')&&document.querySelector('#main')){
-      document.querySelector('#main').insertAdjacentHTML('afterbegin',`<a class="ig-return-link" href="${esc(back)}">返回综合集成工作空间</a>`);
-    }
   });
   handleForm("#tool-form", async (form) => {
     $("#tool-result").innerHTML =
@@ -1829,7 +1853,7 @@ pending?.controller.abort();pending=null;
     pending = null;
   }
   try {
-    const routeData = await api();
+    const routeData = await getBootstrap();
     if (version !== routeVersion) return;
     D = routeData;
     if(mode==='admin'&&route==='integration'){
@@ -1848,13 +1872,10 @@ pending?.controller.abort();pending=null;
       return;
     }
     shell();
-    const back=sessionStorage.getItem('ig-return-'+D.user.id);
-    if(back&&/^#\/admin\/integration-(results|resources|workbench)(\?|$)/.test(back)&&!route.startsWith('integration-')&&document.querySelector('#main')){
-      document.querySelector('#main').insertAdjacentHTML('afterbegin',`<a class="ig-return-link" href="${esc(back)}">返回综合集成工作空间</a>`);
-    }
     if (mode === "front") {window.scrollTo(0, 0);api("portal.visit",{route:"/front/"+route+(routeId?"/"+routeId:"")}).catch(()=>{});}
     window.appReady = true;
   } catch (e) {
+    if (version !== routeVersion) return;
     if(!D){try{const r=await fetch("/api/bootstrap",{headers:{"X-Demo-User":userId,"X-Demo-Mode":"front"}});D=await r.json();}catch{}}
     $("#app").innerHTML =
       `<div class="boot"><h2>无法进入当前页面</h2><p>${esc(e.message)}</p>${btn("选择演示身份", "identity", "", "primary", "user")}<a href="#/front/home" class="btn">返回门户</a></div>`;
@@ -1864,7 +1885,7 @@ window.addEventListener("hashchange", routeChange);
 window.addEventListener("focus", async () => {
   if (!D || $("#dialog").open || pending) return;
   try {
-    await load();
+    await load(false);
     if (["applications", "approvals"].includes(route)) renderPage();
   } catch {}
 });

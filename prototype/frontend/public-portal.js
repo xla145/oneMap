@@ -1,3 +1,4 @@
+import {createToolCenter} from './tool-center.js?v=20260916-direct-use';
 import {landscapePage,topicCover,topicCoverAlt,guideFor} from './landscape.js';
 import {analysisPage,mountAnalysis} from './analysis-workbench.js';
 import {mountSceneMap} from './map.js?v=public-v1';
@@ -50,7 +51,17 @@ export function createPublicPortal(ctx){
     const map=r.type==='图层服务';return title(r.name,r.description,link('data','返回目录'))+`<div class="pub-detail-grid"><section class="panel pub-content"><div class="chips">${tag(r.type)}${tag(r.category)}${tag(r.access)}</div><h2>资源信息</h2><dl class="pub-definition">${[['提供单位',r.source],['数据源',r.dataSource||'本地示例'],['服务类型',r.serviceProtocol||'本地示例'],['覆盖范围',r.region],['坐标系',r.crs],['更新频次',r.frequency],['更新时间',r.updated?.slice(0,10)],['资源版本','v'+r.version],['使用限制','按授权范围和期限使用，当前数据为演示素材']].map(([k,v])=>`<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl><h2>${map?'地图在线预览':'数据字段'}</h2>${map?'<div id="pub-resource-map" class="pub-map"></div><div id="pub-map-info" role="status"></div>':''}<div class="table-scroll"><table><thead><tr><th>字段</th><th>名称</th><th>类型</th><th>说明</th></tr></thead><tbody>${(r.fields||[]).map(f=>`<tr><td>${esc(f.name)}</td><td>${esc(f.label)}</td><td>${esc(f.type)}</td><td>${esc(f.description)}</td></tr>`).join('')}</tbody></table></div></section><aside><section class="panel pub-content pub-sticky"><h2>获取与使用</h2>${tag(r.access)}<p>查看来源、字段和使用范围，按需申请使用。</p>${r.access==='已授权'?btn('查看示例内容','preview',r.id,'primary','eye'):r.access==='可申请'?btn(ctx.cart().includes(r.id)?'已加入清单':'加入申请清单','addCart',r.id,'primary','plus'):link('applications','查看办理进度','','btn primary')}${r.access==='已授权'&&['数据库表','图层服务'].includes(r.type)?btn('下载示例数据','pub-download',r.id,'','download'):''}${r.access==='可申请'?btn('填写并提交申请','cart','','','file'):''}${link('applications','我的申请与授权')}<hr><h3>开发者服务</h3><p>外部服务由数据提供方运行，可能需要独立身份验证。</p>${r.access==='已授权'&&r.hasServiceUrl?btn('打开数据服务','pub-resource-link',r.id+':serviceUrl','','link'):''}${r.access==='已授权'&&r.hasDownloadUrl?btn('打开数据包下载','pub-resource-link',r.id+':downloadUrl','','download'):''}${!r.hasServiceUrl&&!r.hasDownloadUrl?'<p class="muted">尚未配置外部入口，可使用本地示例数据。</p>':''}${btn('了解资源内容','portalQuestion','介绍'+r.name,'text small','sparkles')}</section></aside></div>`;
   }
   const capabilityTitle=(name,description)=>`<header class="pub-tool-heading"><div><h1>${esc(name)}</h1><p>${esc(description)}</p></div></header>`;
+  const toolCenter=createToolCenter(ctx);
   function capabilities(id){
+    if(!id)return toolCenter.catalog();
+    const t=toolCenter.find(id);if(!t)return capabilityTitle('工具已下架或不存在','请从目录选择可用工具。');
+    const allowed=['直接使用','已授权'].includes(toolCenter.access(t));
+    if(params().get('view')==='use'&&allowed&&!t.id.startsWith('resource:')&&!t.engine.startsWith('spatial-')){
+      return `<div class="actions"><a class="btn" href="#/front/capabilities">返回工具目录</a>${link('capabilities','查看详情',id)}</div>`+capabilityRunner(id);
+    }
+    return toolCenter.detail(t)+(allowed&&!t.id.startsWith('resource:')&&!t.engine.startsWith('spatial-')?capabilityRunner(id).replaceAll('<h1>','<h2>').replaceAll('</h1>','</h2>'):'');
+  }
+  function capabilityRunner(id){
     if(!id)return title('能力服务','在线空间分析、项目选址核查与共享工具，按需使用专业能力。')+`<div class="pub-grid">${tools().map(t=>`<article class="panel pub-tool-card pub-capability-card"><div class="pub-capability-header"><span class="tile">${icon(t.icon)}</span><div><small>${esc(t.category)}</small><h2>${esc(t.name)}</h2></div></div><p>${esc(t.description)}</p><div class="pub-capability-footer">${tag(t.available?'可用':'待接入')}${link('capabilities',t.available?'开始使用':'查看说明',t.id,'btn '+(t.available?'primary':''))}</div></article>`).join('')}</div><section class="pub-section">${section('共享工具目录','已发布的工具资源，按权限申请使用。','search')}<div class="pub-grid">${D().resources.filter(r=>r.type==='工具服务').map(r=>card(r)).join('')}</div></section>`;
     const t=byId(tools(),id);if(!t)return capabilityTitle('工具已下架或不存在','请从能力服务选择已发布工具。');
     const engine=t.engine;
@@ -107,12 +118,20 @@ export function createPublicPortal(ctx){
         config.panorama=[...config.extent];
         config.cameraEnabled=false;
       }
-      controller=await mountSceneMap(host,config,{onSelect:f=>{if($('#pub-map-info'))$('#pub-map-info').innerHTML=`<p>${esc(f.name)} · ${esc(f.region)} · ${esc(f.area)} ${esc(f.unit)} · ${esc(f.source)}</p>`;},onMeasure:r=>{if($('[name="geometry"]'))$('[name="geometry"]').value=JSON.stringify(r.coordinates);else if($('#pub-map-info'))$('#pub-map-info').textContent='球面近似面积：'+r.area+' 公顷';},onSelectRange:g=>{if($('[name="geometry"]'))$('[name="geometry"]').value=JSON.stringify(g);}});
+      const mounted=await mountSceneMap(host,config,{onSelect:f=>{if($('#pub-map-info'))$('#pub-map-info').innerHTML=`<p>${esc(f.name)} · ${esc(f.region)} · ${esc(f.area)} ${esc(f.unit)} · ${esc(f.source)}</p>`;},onMeasure:r=>{if($('[name="geometry"]'))$('[name="geometry"]').value=JSON.stringify(r.coordinates);else if($('#pub-map-info'))$('#pub-map-info').textContent='球面近似面积：'+r.area+' 公顷';},onSelectRange:g=>{if($('[name="geometry"]'))$('[name="geometry"]').value=JSON.stringify(g);}});
+      if(token!==generation||!host.isConnected){mounted?.destroy();return;}
+      controller=mounted;
       if(result?.geometry)controller?.setSelection(result.geometry);
       if($('#pub-map-info'))$('#pub-map-info').innerHTML=note(config.layers.length?'专题图斑为授权的本地示例；可缩放、平移并点击图斑。':'当前未绑定可预览的专题图层，地图仅显示行政区划。');
       if($('#pub-map-layers'))$('#pub-map-layers').innerHTML=config.layers.map(l=>`<label><input type="checkbox" data-public-layer="${esc(l.id)}" ${l.visible?'checked':''} ${l.access!=='已授权'?'disabled':''}>${esc(l.name)} ${esc(l.access)}</label>`).join('')||'<p>暂无可用专题图层。</p>';
       if($('#pub-map-layers'))$('#pub-map-layers').onchange=e=>{const l=config.layers.find(l=>l.id===e.target.dataset.publicLayer);if(l){l.visible=e.target.checked;controller?.setLayers(config.layers);}};
     }catch(e){if(token===generation&&host.isConnected)host.innerHTML=note(e.message);}
+  }
+  function bindTool(id){
+    reset();
+    const currentTool=byId(tools(),id);
+    if($('#analysis-workbench')&&currentTool&&['compliance','overlay'].includes(currentTool.engine))analysisCleanup=mountAnalysis($('#analysis-workbench'),{...ctx,api:(action,payload={})=>api(action,{...payload,toolId:id})},currentTool.engine);
+    else if($('#pub-tool-map'))mount('#pub-tool-map','',[]);
   }
   function render(){
     reset();const {mode,route,id}=ctx.state();let html;
@@ -126,9 +145,7 @@ export function createPublicPortal(ctx){
       if(route==='data'&&id)mount('#pub-resource-map',id);
       if(route==='landscape'&&!id)mount('#pub-landscape-map','',[]);
       if(route==='landscape'&&id)mount('#pub-topic-map','',byId(P().topics,id)?.resourceIds||[]);
-      const currentTool=byId(tools(),id);
-      if(route==='capabilities'&&currentTool&&['compliance','overlay'].includes(currentTool.engine))analysisCleanup=mountAnalysis($('#analysis-workbench'),{...ctx,api:(action,payload={})=>api(action,{...payload,toolId:id})},currentTool.engine);
-      else if(route==='capabilities'&&$('#pub-tool-map'))mount('#pub-tool-map','',[]);
+      if(route==='capabilities'){bindTool(id);toolCenter.bind();if(params().get('view')==='use'&&$('#tc-test'))$('#tc-test').scrollIntoView({block:'start'});}
     }
     return true;
   }

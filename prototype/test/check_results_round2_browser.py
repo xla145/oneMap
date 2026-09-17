@@ -1,6 +1,6 @@
 """Use isolated QA with the extra published scene from ResultCoverage.extra_scene."""
 import json
-import check_integration_domains_browser as b
+import prototype.test.check_integration_domains_browser as b
 b.SESSION='results-round2'
 def page(tab):
  b.page('admin/integration-results?tab='+tab,'一张图成果')

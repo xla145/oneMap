@@ -1,4 +1,5 @@
-import {mountSceneMap} from './map.js?v=20260916-map-workspace';
+import {featurePropertyRows} from './feature-properties.js?v=20260917-1';
+import {mountSceneMap} from './map.js?v=20260917-properties-1';
 
 // Own the map lifecycle separately from portal rendering: pending responses must
 // never draw into a new scene or restore results after layers have been hidden.
@@ -53,7 +54,18 @@ export function createIntegrationMap(ctx){
     document.querySelectorAll('[data-ig-layer]').forEach(e=>e.onchange=()=>{layers().find(l=>l.id===e.dataset.igLayer).visible=e.checked;controller.setLayers(layers());invalidate();legend();renderLayerList();remember();});
     document.querySelectorAll('[data-ig-opacity]').forEach(e=>e.oninput=()=>{layers().find(l=>l.id===e.dataset.igOpacity).opacity=Number(e.value);controller.setLayers(layers());document.querySelectorAll('[data-ig-opacity]').forEach(x=>{if(x.dataset.igOpacity===e.dataset.igOpacity)x.value=e.value;});remember();});
   }
-  function showFeature(f){selectedFeature=f;$('#ig-feature').innerHTML=`${result?B('返回查询列表','map-results'):''}<h3>${esc(f.name)}</h3><dl class="ig-feature-fields"><dt>所属图层</dt><dd>${esc(f.layer?.name||f.layerName||'')}</dd><dt>行政区</dt><dd>${esc(f.region||'未登记')}</dd><dt>来源</dt><dd>${esc(f.source||'虚构示例图斑')}</dd><dt>示例业务面积</dt><dd>${esc(f.area??'—')} ${esc(f.unit||'公顷')}</dd></dl><p class="muted">业务面积为示例属性，不等同地图绘制面积。</p>${f.properties?'<dl class="ig-feature-fields">'+Object.entries(f.properties).filter(([k,v])=>['type','county','owner','approval','updateTime','control','year'].includes(k)&&v!=null).map(([k,v])=>'<dt>'+esc(({type:'类型',county:'旗县',owner:'责任单位',approval:'来源状态',updateTime:'更新时间',control:'管控说明',year:'年份'})[k])+'</dt><dd>'+esc(v)+'</dd>').join('')+'</dl>':''}${f.coordinates?.length&&info().resultPermissions?.analyze?'<button class="btn primary" type="button" data-mw="analyze-feature">以此地块进行核查 →</button>':''}`;changed();}
+  function showFeature(f){
+    selectedFeature=f;
+    const panel=$('#ig-feature');
+    const geometryType=f.geometry?.type||(f.coordinates?.length?'Polygon':'');
+    panel.innerHTML=`<div class="mw-panel-heading"><div><small>FEATURE ATTRIBUTES</small><h3>对象属性</h3></div>${B('关闭','map-properties-close')}</div><h4>${esc(f.name||f.properties?.name||'未命名对象')}</h4>${result?B('返回查询列表','map-results'):''}<dl class="ig-feature-fields"><dt>所属图层</dt><dd>${esc(f.layer?.name||f.layerName||'查询结果')}</dd><dt>空间类型</dt><dd>${esc(({Point:'点',MultiPoint:'多点',LineString:'线',MultiLineString:'多线',Polygon:'面',MultiPolygon:'多面'})[geometryType]||geometryType||'未登记')}</dd>${f.area!=null?'<dt>业务面积</dt><dd>'+esc(f.area)+' '+esc(f.unit||'公顷')+'</dd>':''}${featurePropertyRows(f).map(r=>'<dt>'+esc(r.label)+'</dt><dd>'+esc(r.value)+'</dd>').join('')}</dl><p class="muted">显示当前授权图层的对象属性。示例数据仅供演示，业务面积不等同于地图量算面积。</p>${['Polygon','MultiPolygon'].includes(geometryType)&&info().resultPermissions?.analyze?'<button class="btn primary" type="button" data-mw="analyze-feature">以此地块进行核查 →</button>':''}`;
+    $('.ig-map-workspace')?.classList.remove('mw-hide-right');
+    const toggle=$('[data-mw="right"]');if(toggle)toggle.setAttribute('aria-expanded','true');
+    panel.parentElement.prepend(panel);
+    panel.parentElement.scrollTop=0;
+    changed();
+    if(window.matchMedia('(max-width:720px)').matches)panel.scrollIntoView({behavior:'smooth',block:'start'});
+  }
   function showResults(){if(!result)return;$('#ig-feature').innerHTML=`<h3>查询结果 · ${result.total}项</h3><p>查询范围 ${result.areaHa} 公顷 · 场景 v${result.sceneVersion}</p>${rows.length?B('定位全部结果','map-fit-results'): '<p>当前范围与已启用图层没有相交要素，可调整范围或图层重试。</p>'}<div class="ig-result-list">${rows.map((r,i)=>`<button class="ig-result-item" data-action="ig-map-result" data-id="${i}"><strong>${esc(r.name)}</strong><span>${esc(r.layerName)} · ${esc(r.region)}</span><small>定位并查看属性 →</small></button>`).join('')}</div><small>${esc(result.scope)}</small>`;changed();}
   async function query(request){
     if(!info().resultPermissions?.analyze)throw Error('当前仅有成果查看权限，请申请空间分析授权');
@@ -70,13 +82,14 @@ export function createIntegrationMap(ctx){
   }
   async function load(extraOverride=null){
     const id=$('[name=scene]')?.value;if(!id){$('#ig-layers').innerHTML='<p>请先在应用中心发布可访问的二维地图场景。</p>';return;}
-    remember();selectedScene=id;const restore=saved()?.sceneId===id?saved():null;filter=restore?.filter||'';group=restore?.group||'theme';region=restore?.region||{id:'150000',name:'内蒙古自治区',city:'',county:''};const token=++epoch;queryEpoch++;controller?.destroy();controller=null;scene=null;rows=[];result=null;
+    remember();selectedScene=id;const restore=saved()?.sceneId===id?saved():null;filter=restore?.filter||'';group=restore?.group||'theme';region=restore?.region||{id:'150000',name:'内蒙古自治区',city:'',county:''};const token=++epoch;queryEpoch++;controller?.destroy();controller=null;scene=null;rows=[];result=null;selectedFeature=null;
     $('#ig-map').replaceChildren();$('#ig-map-state').textContent='正在加载授权场景…';$('#ig-layers').innerHTML='<p>正在读取授权图层…</p>';$('#ig-feature').innerHTML='<p>场景加载后可查看属性和查询结果。</p>';$('#ig-map-legend').innerHTML='';
     try{
       const next=await api('integration.results.map.runtime',{sceneId:id,extraLayers:extraOverride??restore?.extraLayers??[]});if(token!==epoch)return;scene=next;
       next.config.layers.forEach((l,i)=>{l.displayColor=l.displayColor||colors[i%colors.length];const old=restore?.layers?.find(x=>x.id===l.id);if(old&&l.access==='已授权'){l.visible=!!old.visible;l.opacity=Number.isFinite(old.opacity)?Math.max(0,Math.min(1,old.opacity)):1;}if(l.access!=='已授权')l.visible=false;});
       const host=document.createElement('div');host.className='pc-map-host';$('#ig-map').replaceChildren(host);
       const mounted=await mountSceneMap(host,next.config,{
+        inspectEnabled:true,
         onSelect:f=>{if(token===epoch)showFeature(f);},
         onMeasure:r=>{if(token===epoch)$('#ig-feature').innerHTML=`<h3>面积量算</h3><p>${esc(r.area)} 公顷</p><small>按绘制范围近似计算；不作为业务审批结论。</small>`;},
         onSelectRange:(geometry,mode)=>mode==='zoom'?controller.fitGeometry(geometry):rangeHandler?rangeHandler(geometry,mode):query({sceneId:id,mode:mode==='box'?'box':'polygon',geometry}).catch(fail),
@@ -89,6 +102,7 @@ export function createIntegrationMap(ctx){
   }
   function expand(){expanded=!expanded;$('.ig-map-workspace').classList.toggle('ig-map-expanded',expanded);$('[data-action=ig-map-expand]').textContent=expanded?'退出放大（Esc）':'放大工作区';}
   async function action(op,id){
+    if(op==='map-properties-close'){invalidate();return true;}
     if(op==='map-demo-detail'){const l=layers().find(l=>l.id===id);if(l)ctx.modal(l.name,'<p>来源：用户提供的内蒙古一张图demo</p><p>业务分类：'+esc(l.theme)+' · 数据年份：2025</p><p>'+l.features.length+' 个模拟要素；保留原始属性，显示几何经过近似坐标转换。仅供演示。</p>');return true;}
     if(op==='map-bookmark-save'){const token=epoch;if(busy())throw Error('请先加载地图');form('收藏图层与视角',field('name','收藏名称',scene.name),async v=>{const r=await api('integration.bookmark.save',{values:{name:v.name,sceneId:scene.id,extraLayers:scene.extraLayers||[],layerIds:enabled().map(l=>l.id),view:controller.getViewState(),kind:'layers'}});if(token!==epoch)return;info().bookmarks.push(r);closeModal();$('#ig-bookmarks').innerHTML=bookmarks();toast('已收藏当前图层与视角');});return true;}
     if(op==='map-bookmark-delete'){const token=epoch;const row=info().bookmarks.find(r=>r.id===id);await api('integration.bookmark.delete',{id,rev:row.rev});if(token!==epoch)return true;info().bookmarks=info().bookmarks.filter(r=>r.id!==id);$('#ig-bookmarks').innerHTML=bookmarks();return true;}
@@ -112,7 +126,7 @@ export function createIntegrationMap(ctx){
     if(op==='map-fit-results'&&rows.length)controller.fitGeometry({type:'FeatureCollection',features:rows.map(r=>({type:'Feature',properties:{},geometry:r.geometry||{type:'Polygon',coordinates:[[...r.coordinates,r.coordinates[0]]]}}))});
     if(op==='map-layer'){const l=layers().find(l=>l.id===id);if(!l||l.access!=='已授权')throw Error('图层未授权');if(!l.visible){l.visible=true;controller.setLayers(layers());invalidate();renderLayerList();legend();}if(!controller.fitLayer(id))toast('该图层在当前授权范围内暂无要素');remember();}
     if(op==='show-layers'||op==='hide-layers'){layers().forEach(l=>l.visible=op==='show-layers'&&l.access==='已授权');controller.setLayers(layers());invalidate();renderLayerList();legend();}
-    if(op==='select-polygon'||op==='select-box'){if(!enabled().length)throw Error('请先启用至少一个已授权图层');invalidate();controller.startSelection(op==='select-box'?'box':'polygon');}
+    if(op==='select-polygon'||op==='select-box'){if(!enabled().length)throw Error('请先启用至少一个已授权图层');invalidate();rangeHandler=null;controller.startSelection(op==='select-box'?'box':'polygon');}
     if(op==='query-point'){const center=controller.getViewState().center;form('坐标查询',field('mode','方式','point','select',[['point','单点（首个命中）'],['penetrate','穿透（全部命中）'],['nearby','周边']])+field('x','经度',Number(center[0].toFixed(5)),'number')+field('y','纬度',Number(center[1].toFixed(5)),'number')+field('radius','周边半径（米）',1000,'number'),async v=>{await query(v);closeModal();if(result?.queryGeometry)controller.fitGeometry(result.queryGeometry);});}
     if(op==='map-history'){
       const r=info().mapHistory.find(r=>r.id===id);if(!r)return;

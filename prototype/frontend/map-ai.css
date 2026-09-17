@@ -1,0 +1,38 @@
+.mw-workspace .mw-ai-trigger{background:#ede8ff;color:#533bb2;border-color:#c8b9f3;font-weight:600}
+.mw-workspace .mw-ai-open .ig-map-grid{grid-template-columns:240px minmax(0,1fr) 400px}
+.mw-workspace .mw-ai-open.mw-hide-left .ig-map-grid{grid-template-columns:0 minmax(0,1fr) 400px}
+.mw-ai-open #ig-feature{display:none!important}
+.mw-workspace .mw-ai-open .mw-right{padding:0;overflow:auto;background:#f8f9fd}
+#mw-ai-panel{padding:18px;min-width:0;color:#29465e;font-size:12px}
+.mai-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.mai-heading h2{font-size:19px;margin:3px 0}.mai-heading small{font-size:9px;letter-spacing:1.5px;color:#7663a8}
+.mai-mode{color:#776294;font-size:11px;background:#eee9fb;padding:7px 9px;border-radius:6px}
+.mai-field{display:flex;flex-direction:column;gap:7px;margin:12px 0}
+.mai-field select,.mai-field textarea{width:100%;min-width:0;border:1px solid #d8deea;border-radius:7px;padding:9px;background:#fff;color:#263e52;font:inherit}
+.mai-scope{border:1px solid #e0e3ed;border-radius:8px;padding:10px;background:white}
+.mai-scope strong,.mai-scope>span{display:block;margin-bottom:6px}.mai-scope>span{color:#758294}
+.mai-examples{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.mai-examples .btn{color:#67518e;background:#f4f0fb}
+#mai-messages{max-height:260px;overflow:auto;scrollbar-width:thin}
+.mai-message{border-radius:9px;padding:10px 12px;margin:9px 0;background:#fff;border:1px solid #e0e5ed;overflow-wrap:anywhere}
+.mai-message.user{background:#e9effa;margin-left:24px}.mai-message.assistant{margin-right:16px}
+.mai-message small{color:#748297}.mai-message p{margin:5px 0;line-height:1.7}
+.mai-welcome{padding:8px 0;color:#62758a}.mai-welcome h3{color:#304767}
+#mai-form{position:sticky;bottom:0;background:#f8f9fdee;padding-bottom:10px;z-index:2}
+#mai-status{font-size:11px;line-height:1.7;color:#656f8a;overflow-wrap:anywhere}
+.mai-result-title{display:flex;justify-content:space-between;align-items:center;gap:8px}.mai-result-title h3{font-size:15px}
+#mai-results p{line-height:1.7}.mai-table{overflow:auto;max-height:310px;margin:12px 0;border:1px solid #dce2ee;border-radius:6px}
+.mai-table table{width:100%;border-collapse:collapse;font-size:11px;background:white}
+.mai-table th,.mai-table td{padding:9px 7px;white-space:normal;border-bottom:1px solid #e7eaf1;max-width:150px;overflow-wrap:anywhere}
+.mai-table td small{display:block;color:#8693a6;margin-top:4px}
+.mai-table tr[data-ai]{cursor:pointer}.mai-table tr[aria-selected=true]{background:#ece4ff;outline:1px solid #b39add}
+#mw-ai-panel details{margin:12px 0;border-top:1px solid #dde2ed;padding-top:10px}
+#mw-ai-panel summary{cursor:pointer;font-weight:600}
+#mw-ai-panel pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto;background:#edf0f6;padding:10px;font-size:11px}
+.mai-notes{color:#7c8596;font-size:10px}.mai-groups p{display:flex;justify-content:space-between;gap:8px;background:#fff;border-bottom:1px solid #e0e5eb;padding:8px}
+#mai-result-layers>div{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:10px 0}#mai-result-layers>div>span{flex-basis:100%;overflow-wrap:anywhere}
+#mai-history{display:grid;gap:7px;margin-top:10px}#mai-history button{text-align:left;white-space:normal}
+@media(max-width:1100px){.mw-workspace .mw-ai-open .ig-map-grid,.mw-workspace .mw-ai-open.mw-hide-left .ig-map-grid{grid-template-columns:minmax(0,1fr) 370px}}
+@media(max-width:720px){.mw-workspace .mw-ai-open .ig-map-grid,.mw-workspace .mw-ai-open.mw-hide-left .ig-map-grid{display:block;position:relative}.mw-workspace .mw-ai-open .mw-right{display:block!important;position:absolute;inset:0 0 0 auto;width:min(100%,400px);z-index:130;max-height:100%;border-left:1px solid #dce2ed;box-shadow:-5px 0 18px #30476720}.mw-ai-open .ig-map-center{min-height:540px}.mai-table td{max-width:130px}}
+
+@media(max-width:720px){.mw-workspace .mw-ai-open .mw-right.mai-drawing{height:130px;top:auto;overflow:auto}.mai-drawing #mw-ai-panel>:not(.mai-heading):not(#mai-status){display:none}.mai-drawing #mai-status{margin:8px 0}}

@@ -1,5 +1,6 @@
 """Local, persistent intelligence-center prototype. No real AI or government API."""
 import argparse
+import gzip
 import json
 import re
 import sqlite3
@@ -69,6 +70,7 @@ def public_resources(s,u):
     for r in active(s,'resources'):
         if allowed(u,r):
             r['access']=resource_status(s,u,r)
+            if r['type']=='工具服务':r['applicationCount']=sum(any(i['resourceId']==r['id'] for i in a['items']) for a in s['applications'])
             if r['access']!='已授权': r.pop('sample',None)
             r['hasServiceUrl']=bool(r.get('serviceUrl'));r['hasDownloadUrl']=bool(r.get('downloadUrl'))
             r.pop('serviceUrl',None);r.pop('downloadUrl',None)
@@ -696,7 +698,27 @@ class Handler(SimpleHTTPRequestHandler):
     def log_message(self,fmt,*args): pass
     def reply(self,status,data):
         if status>=400:self.audit_error=str(data.get('error',''))[:300]
-        body=json.dumps(data,ensure_ascii=False).encode();self.send_response(status);self.send_header('Content-Type','application/json; charset=utf-8');self.send_header('Cache-Control','no-store');self.send_header('Content-Length',str(len(body)));self.end_headers();self.wfile.write(body)
+        body=json.dumps(data,ensure_ascii=False,separators=(',',':')).encode()
+        encodings={}
+        for item in self.headers.get('Accept-Encoding','').lower().split(','):
+            encoding,*params=item.strip().split(';')
+            quality=1.0
+            for param in params:
+                key,_,value=param.strip().partition('=')
+                if key=='q':
+                    try:quality=float(value)
+                    except ValueError:quality=0.0
+            encodings[encoding]=quality
+        compressed=len(body)>=1024 and encodings.get('gzip',encodings.get('*',0))>0
+        if compressed:body=gzip.compress(body,compresslevel=5)
+        self.send_response(status)
+        self.send_header('Content-Type','application/json; charset=utf-8')
+        self.send_header('Cache-Control','no-store')
+        self.send_header('Vary','Accept-Encoding')
+        if compressed:self.send_header('Content-Encoding','gzip')
+        self.send_header('Content-Length',str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
     def enforce_security(self):
         with LOCK,sqlite3.connect(DB) as c:portal_operations.check_request(read_state(c),self.client_address[0],self.headers.get('User-Agent',''))
     def do_GET(self):
@@ -706,7 +728,11 @@ class Handler(SimpleHTTPRequestHandler):
         if path=='/api/bootstrap':
             try:
                 with LOCK,sqlite3.connect(DB) as c:
-                    s=read_state(c);u=user_for(s,self.headers.get('X-Demo-User','u1'));self.audit_user=u;self.reply(200,bootstrap(s,u,self.headers.get('X-Demo-Mode','front')))
+                    s=read_state(c)
+                # read_state returns an independent snapshot. Neither building the
+                # response nor writing to a slow client needs the shared state lock.
+                u=user_for(s,self.headers.get('X-Demo-User','u1'));self.audit_user=u
+                self.reply(200,bootstrap(s,u,self.headers.get('X-Demo-Mode','front')))
             except Invalid as e: self.reply(e.status,{'error':e.message})
             return
         if path in ['/','/index.html','/app.js','/style.css','/assets/inner-mongolia.geojson'] or (path.startswith('/frontend/') and Path(path).suffix in ['.js','.css'] and '..' not in path and (ROOT/path.lstrip('/')).resolve().is_relative_to(ROOT/'frontend')):
@@ -750,6 +776,19 @@ class Handler(SimpleHTTPRequestHandler):
                     result=portal_operations.execute(DB,s,u,'portal.restore',payload)
                     with sqlite3.connect(DB) as c:
                         s=read_state(c);portal_admin.event(s,u,'operation','还原数据库',payload.get('id',''),result['safetyBackup']);platform_store.save(c,s);c.commit()
+                self.reply(200,result);return
+            if path=='/api/action' and body.get('action')=='integration.ai.ask':
+                import map_ai
+                with LOCK,sqlite3.connect(DB) as c:
+                    snapshot=read_state(c);u=user_for(snapshot,self.headers.get('X-Demo-User','u1'));self.audit_user=u
+                    integration.migrate(snapshot)
+                result=map_ai.execute(snapshot,u,'ask',payload)
+                if result.get('queryId'):
+                    row=map_ai.own(snapshot,u,result['queryId'])
+                    with LOCK,sqlite3.connect(DB) as c:
+                        current=read_state(c);current_user=user_for(current,u['id']);integration.migrate(current)
+                        map_ai.save_query(current,current_user,row)
+                        platform_store.save(c,current);c.commit()
                 self.reply(200,result);return
             if path=='/api/action' and isinstance(body.get('action'),str) and body['action'].startswith(('analysis.','integration.analysis.')):
                 action=body['action'].replace('integration.analysis.','analysis.');area_limit=None

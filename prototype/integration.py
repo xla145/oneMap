@@ -184,6 +184,9 @@ def bootstrap(s,u,mode):
 
 def execute(s,u,action,payload):
     p=migrate(s);op=action.removeprefix('integration.');v=values(payload)
+    if op.startswith('ai.'):
+        import map_ai
+        return map_ai.execute(s,u,op[3:],payload)
     if op.startswith('results.'):return results.execute(s,u,op[8:],payload)
     if op=='workbench':
         cap.require(ia.internal_access(s,u),'需要内部工作空间准入',403)

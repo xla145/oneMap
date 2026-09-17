@@ -61,7 +61,10 @@ def can_material(s,u,r):
 
 def bootstrap(s,u,mode):
     p=migrate(s); full=mode=='admin' and u['role']=='平台管理员'
-    result={e:[public_row(r) for row in p[e] if (r:=deepcopy(row) if full else live(row)) and (full or (can_tool(u,r) if e=='tools' else can_material(s,u,r)))] for e in ['tools','materials']}
+    result={e:[public_row(r) for row in p[e] if (r:=deepcopy(row) if full else live(row)) and (full or (can_tool(u,r,s) if e=='tools' else can_material(s,u,r)))] for e in ['tools','materials']}
+    from prototype.test.tool_center import enrich
+    if not full:result['tools']=[enrich(s,r) for r in result['tools']]
+    if full:result['toolPermissions']=deepcopy(p.get('toolPermissions',[]));result['toolPermissionsRev']=p.get('toolPermissionsRev',1)
     result['registrations']=[deepcopy(r) for r in p['registrations'] if full or r['createdBy']==u['id']]
     import portal_keys
     result['apiKeys']=portal_keys.bootstrap(s,u,mode)
@@ -78,13 +81,16 @@ def event(s,u,kind,action,target='',name='',**extra):
 def portal_role(u):
     return "管理员" if u["role"]=="平台管理员" else u.get("portalRole","普通用户")
 
-def can_tool(u,r):
-    return u["role"]=="平台管理员" or r.get("audience","全部用户") in ["全部用户",portal_role(u)]
+def can_tool(u,r,s=None):
+    if u['role']=='平台管理员':return True
+    if r.get('audience','全部用户') not in ['全部用户',portal_role(u)]:return False
+    from prototype.test.tool_center import MODULES
+    return not any(rule['role']==portal_role(u) and rule['category'] in ['*',r.get('category')] and rule['module'] in ['*',r.get('module') or MODULES.get(r['engine'],'外部服务')] for rule in (s or {}).get('portalManagement',{}).get('toolPermissions',[]))
 
 def tool(s,key,engine=None,u=None):
     r=live(find(migrate(s)['tools'],key))
     require(r,'工具已下架或尚未发布',403)
-    require(u is None or can_tool(u,r),'当前用户没有工具使用权限',403)
+    require(u is None or can_tool(u,r,s),'当前用户没有工具使用权限',403)
     if r.get('resourceId'):
         resource=published(find(s['resources'],r['resourceId']))
         require(resource and resource['type']=='工具服务' and (u is None or authorized(s,u,resource)),'关联工具资源已停用或当前用户未获授权',403)
@@ -101,6 +107,23 @@ def execute(s,u,action,p):
         return {'ok':True}
     if action=='portal.toolCheck':
         r=tool(s,p.get('id'),u=u);return public_row(r)
+    if action=='portal.toolRun':
+        import centers
+        from shapely.errors import GEOSException
+        from pyproj.exceptions import ProjError
+        r=tool(s,p.get('id'),u=u);payload=p.get('payload',{})
+        require(isinstance(payload,dict) and len(json.dumps(payload))<=200000,'请求 JSON 不能超过200KB')
+        require(r['engine']!='external','外部工具请使用登记入口')
+        if r['engine'] in ['spatial-store','spatial-edit']:admin(u)
+        if r['engine'] in ['spatial-store','spatial-edit','spatial-query']:
+            resource=published(find(s['resources'],payload.get('resourceId')))
+            require(resource and authorized(s,u,resource),'目标图层未授权或已下架',403)
+        start=datetime.now()
+        try:output=centers.run_tool(s,r,payload)
+        except (ValueError,TypeError,KeyError,GEOSException,ProjError) as error:
+            require(False,'空间请求无效：'+str(error)[:200])
+        event(s,u,'tool','在线接口测试',r['id'],r['name'],status='成功',durationMs=round((datetime.now()-start).total_seconds()*1000,2))
+        return output
     if action=='portal.toolResult':
         r=tool(s,p.get('id'),u=u);status=p.get('status')
         require(status in ['成功','失败','打开入口'],'调用结果无效')
@@ -135,6 +158,18 @@ def execute(s,u,action,p):
         import portal_keys
         return portal_keys.execute(s,u,action,p)
     admin(u)
+    if action=='portal.toolPermissions':
+        from prototype.test.tool_center import MODULES
+        require(p.get('rev')==m.get('toolPermissionsRev',1),'权限配置已更新，请刷新',409)
+        rows=p.get('rules');require(isinstance(rows,list) and len(rows)<=100,'权限规则最多100条')
+        result=[]
+        for rule in rows:
+            require(isinstance(rule,dict),'权限规则格式错误')
+            role=rule.get('role');category=text(rule.get('category','*'),300);module=rule.get('module','*')
+            require(role in ['普通用户','企业用户'] and category and module in ['*',*MODULES.values()],'权限规则无效')
+            result.append(dict(role=role,category=category,module=module))
+        m['toolPermissions']=result;m['toolPermissionsRev']=m.get('toolPermissionsRev',1)+1
+        event(s,u,'operation','更新工具类型与功能模块权限');return {'ok':True}
     if action=='portal.userRole':
         r=find(s['users'],p.get('id'));require(r,'用户不存在',404)
         require(r.get('rev',1)==p.get('rev'),'用户已更新，请刷新',409)
@@ -171,13 +206,36 @@ def execute(s,u,action,p):
         if action=='portal.save':
             v=p.get('values');require(isinstance(v,dict),'内容格式无效')
             r=deepcopy(old) if old else dict(id=ident(),rev=0,version=0,status='草稿',versions=[])
-            for key in ['name','category','description','source','engine','url','audience','contentId','resourceId','provider','apiDescription','inputExample','outputDescription']:
-                if key in v:r[key]=text(v[key],2000 if key in ['description','apiDescription','inputExample','outputDescription'] else 300)
+            for key in ['name','category','description','source','engine','url','audience','contentId','resourceId','provider','publisher','apiDescription','inputExample','outputDescription','requestParameters','outputExample','directoryId','region','interfaceType','module','usageMode']:
+                if key in v:r[key]=text(v[key],2000 if key in ['description','apiDescription','inputExample','outputDescription','requestParameters','outputExample'] else 300)
             require(r.get('name') and r.get('category'),'名称和分类必填')
             try:r['order']=int(v.get('order',r.get('order',1)))
             except (TypeError,ValueError):require(False,'排序必须为整数')
             require(0<=r['order']<=9999,'排序范围为 0–9999')
             if entity=='tools':
+                from prototype.test.tool_center import MODULES
+                for key,kind in [('requestParameters',list),('inputExample',dict),('outputExample',dict)]:
+                    if r.get(key):
+                        try:value=json.loads(r[key])
+                        except (ValueError,TypeError):require(False,'参数定义与请求 / 返回示例需为有效 JSON')
+                        require(isinstance(value,kind),'参数定义应为数组；请求和返回示例应为 JSON 对象')
+                        if key=='requestParameters':require(len(value)<=30 and all(isinstance(x,dict) and all(isinstance(x.get(k),str) for k in ['name','type','required','description']) for x in value),'每个参数需包含 name、type、required、description 四个文本字段，最多30项')
+                r.setdefault('module',MODULES.get(r.get('engine'),'外部服务'))
+                require(r['module'] in MODULES.values(),'功能模块无效')
+                require(r.get('usageMode','直接使用') in ['直接使用','申请授权'],'使用方式无效')
+                require(r.get('usageMode')!='申请授权' or r.get('resourceId'),'申请授权工具必须关联资源中心的工具资源')
+                if r.get('directoryId'):
+                    directory=find(s.get('centers',{}).get('directories',[]),r['directoryId'])
+                    require(directory and directory['kind'] in ['公共目录','工具服务'],'请选择工具共享目录')
+                if 'screenshot' in v:
+                    value=v['screenshot'];require(isinstance(value,str) and len(value)<2800000,'截图不能超过2MB')
+                    if value:
+                        match=re.fullmatch(r'data:image/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)',value);require(match,'截图支持 PNG、JPEG、WebP')
+                        try:raw=base64.b64decode(match[2],validate=True)
+                        except (ValueError,binascii.Error):require(False,'截图编码无效')
+                        valid=(match[1]=='png' and raw.startswith(b'\x89PNG\r\n\x1a\n')) or (match[1]=='jpeg' and raw.startswith(b'\xff\xd8\xff')) or (match[1]=='webp' and raw.startswith(b'RIFF') and raw[8:12]==b'WEBP')
+                        require(valid and len(raw)<=2*1024*1024,'截图格式或大小无效')
+                    r['screenshot']=value
                 require(r.get('engine') in ENGINES,'请选择执行能力')
                 if old and old['id'] in ENGINES:require(r['engine']==old['id'],'内置工具的执行能力不能变更')
                 require(r.get('audience','全部用户') in ['全部用户','普通用户','企业用户','管理员'],'工具访问范围无效')
@@ -217,6 +275,7 @@ def execute(s,u,action,p):
                     require(resource and resource['type']=='工具服务','关联工具资源尚未发布或已停用')
                 if r.get('published'):r.setdefault('versions',[]).append(deepcopy(r['published']))
                 r.update(version=r['version']+1,status='已发布',suspended=False,updated=now())
+                if entity=='tools':r['publishedAt']=now()
                 r['published']={k:deepcopy(v) for k,v in r.items() if k not in ['published','versions']}
             else:r.update(status='已停用',suspended=True)
             r.update(rev=r['rev']+1,updated=now())

@@ -110,7 +110,7 @@ export function createCenters(ctx){
     const allowedTabs=!C().canManage&&mode==='admin'?tabs.filter(x=>['catalog','deliveries','subscriptions'].includes(x[0])):tabs;
     let top='';if(C().canManage&&names[active])top=action('新增'+names[active],'edit',active+':','primary');
     if(active==='datasets'&&C().canManage)top=action('按标准建表','create-dataset','','primary');
-    if(active==='tools')top=btn('注册工具','pm-edit','tools:','primary')+action('登记内部组件模板','tool-templates','');
+    if(active==='tools')top=btn('注册工具','pm-edit','tools:','primary')+action('登记内部组件模板','tool-templates','')+btn('类型与模块权限','pm-tool-permissions','','');
     if(active==='deliveries'&&C().canDeliver)top=action('新建分发','create-delivery','','primary');
     if(active==='inspections')top=action('执行巡检','inspect','','primary');
     let html=title(name,desc,top)+`<div class="tabs ct-tabs">${allowedTabs.map(([key,label])=>`<button data-action="ct-tab" data-id="${key}" class="${active===key?'active':''}">${label}</button>`).join('')}</div>`;

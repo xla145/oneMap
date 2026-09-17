@@ -1,4 +1,6 @@
-import {mountAnalysis} from './analysis-workbench.js?v=20260916-map-workspace';
+import {createMapAI} from './map-ai.js?v=20260916-ai-map';
+import {createMapApplications} from './map-applications.js?v=20260916-workspace-apps-r2';
+import {createMapTools} from './map-tools.js?v=20260916-shared-tools-r2';
 
 // Map business composition: all numbers come from the currently authorized runtime.
 const THEMES=[
@@ -11,12 +13,14 @@ const THEMES=[
   ['督察执法','图斑追溯','定位问题图斑，查看关联业务成果','执法|督察|整改'],
   ['灾害防治','风险分布','查看隐患点、风险区与周边对象','灾害|风险|隐患']
 ];
-const CHECKS=['规划地类分析','建设用地管制区分析','农转用审批分析','土地供应分析','永久基本农田分析','生态保护红线分析','自然保护地分析','水源地保护区分析'];
 export function createResultsWorkspace(ctx){
   const {esc,api,nav,toast,mapUI,resultUI}=ctx;
   const $=s=>document.querySelector(s),D=()=>ctx.state().D,I=()=>D().integration;
-  let seriesKey='forestCover';
-  let tab='map',cleanup=null,epoch=0,theme=THEMES[0][0],snapshot=null,selectedMetric='',listener=null;
+  let seriesKey='forestCover',toolsOpen=false,aiOpen=false;
+  const aiUI=createMapAI({...ctx,close:closeAI});
+  const toolsUI=createMapTools({...ctx,close:closeTools});
+  const applications=createMapApplications({...ctx,async mountMap(host,id){host.innerHTML=mapUI.html();const select=$('[name=scene]');if(![...select.options].some(o=>o.value===id))throw Error('当前身份没有该地图场景的访问权限');select.value=id;await bindMap(++epoch);}});
+  let tab='map',epoch=0,theme=THEMES[0][0],snapshot=null,selectedMetric='',listener=null;
   const path=(key,extra={})=>'/admin/integration-results?'+new URLSearchParams({tab:key,...extra});
   const go=(key,extra={})=>nav(path(key,extra));
   const command=(label,action,id='')=>`<button type="button" class="btn small" data-mw="${action}" data-id="${esc(id)}">${label}</button>`;
@@ -24,13 +28,19 @@ export function createResultsWorkspace(ctx){
   const catalog=()=>state().scene?.referenceDemo?state().layers.map(l=>({id:'resource:'+l.resourceId,resourceId:l.resourceId,name:l.name,layerTheme:l.theme,provider:'内蒙古参考demo',authorized:true,scenes:[{id:'nmg-reference-demo'}]})):(I().results?.layers||[]);
   const available=()=>state().layers.filter(l=>l.access==='已授权');
   function objects(){const s=state();return s.layers.filter(l=>l.visible&&l.access==='已授权').flatMap(l=>(l.features||[]).map(f=>({...f,layerId:l.id,layerName:l.name,resourceId:l.resourceId}))).filter(f=>s.region.id==='150000'||(String(f.region||'').includes(s.region.name)||f.county===s.region.name));}
-  function header(){return `<header class="mw-header"><div class="mw-brand"><span class="mw-brand-mark">◈</span><div><h1>一张图成果</h1><small>NATURAL RESOURCES · MAP WORKSPACE</small></div></div><nav class="mw-nav" aria-label="一张图业务导航">${[['map','综合看图'],['business','业务专题'],...(I().resultPermissions.analyze?[['analysis','地块核查']]:[]),['time','时序对比'],['tools','工具箱'],['scenes','应用场景'],['usage','成果监测'],['saved','我的成果']].map(([id,label])=>`<button type="button" data-action="ig-tab" data-id="${id}" ${tab===id?'aria-current="page"':''}>${label}</button>`).join('')}</nav><a class="mw-source-link" href="/assets/nmg-demo/index.html" target="_blank" rel="noopener" title="打开提取的完整参考demo">原版地图 ↗</a><button class="mw-help" type="button" data-mw="help" aria-label="查看工作台使用说明">?</button></header>`;}
-  function html(selected){tab=['map','business','analysis','time','tools','scenes','usage','saved'].includes(selected)?selected:'map';theme=new URLSearchParams(location.hash.split('?')[1]).get('theme')||THEMES[0][0];if(!THEMES.some(t=>t[0]===theme))theme=THEMES[0][0];return `<section class="mw-workspace" data-view="${tab}">${header()}${['tools','scenes','usage'].includes(tab)?`<div class="mw-directory"><div class="mw-directory-heading"><div><span class="mw-kicker">${tab==='usage'?'OPERATIONS':'CONNECTED CAPABILITIES'}</span><h2>${{tools:'找到适合当前业务的工具',scenes:'自然资源业务应用',usage:'成果集成与使用监测'}[tab]}</h2><p>统一发现已发布成果，使用时按当前身份校验权限。</p></div><a href="#${path('map')}" class="btn">返回地图工作区 →</a></div>${tab==='usage'?resultUI.usage():resultUI.directory(tab)}</div>`:mapUI.html()}</section>`;}
+  function mapTabs(){return [['map','综合浏览','区域资源与空间对象'],['business','业务专题','按业务主题组织图层'],...(I().resultPermissions.analyze?[['analysis','地块核查','地块输入、分析与成果']]:[]),['time','时序对比','查看不同年份的资源变化']];}
+  function header(){return `<header class="mw-header"><div class="mw-brand"><span class="mw-brand-mark">◈</span><div><h1>一张图成果</h1><small>NATURAL RESOURCES · MAP WORKSPACE</small></div></div><nav class="mw-nav" aria-label="一张图业务导航"><button type="button" class="mw-map-parent ${mapTabs().some(([id])=>id===tab)?'is-active':''}" data-mw="map-menu" aria-expanded="false" aria-controls="mw-map-submenu">综合看图 <span aria-hidden="true">⌄</span></button>${[['tools','工具箱'],['scenes','应用场景'],['usage','成果监测'],['saved','我的成果']].map(([id,label])=>`<button type="button" data-action="ig-tab" data-id="${id}" ${tab===id?'aria-current="page"':''}>${label}</button>`).join('')}</nav><a class="mw-source-link" href="/assets/nmg-demo/index.html" target="_blank" rel="noopener" title="打开提取的完整参考demo"></a><button class="mw-help" type="button" data-mw="help" aria-label="查看工作台使用说明">?</button></header><nav id="mw-map-submenu" class="mw-map-submenu" aria-label="综合看图子菜单" hidden>${mapTabs().map(([id,label,description])=>`<button type="button" data-action="ig-tab" data-id="${id}" ${tab===id?'aria-current="page"':''}><span><strong>${label}</strong><small>${description}</small></span><i aria-hidden="true">${tab===id?'✓':'›'}</i></button>`).join('')}</nav>`;}
+  function closeMapMenu(focus=false){const menu=$('#mw-map-submenu'),trigger=$('[data-mw=map-menu]');if(menu)menu.hidden=true;trigger?.setAttribute('aria-expanded','false');if(focus===true)trigger?.focus();}
+  function toggleMapMenu(){const menu=$('#mw-map-submenu'),trigger=$('[data-mw=map-menu]');if(!menu||!trigger)return;if(!menu.hidden){closeMapMenu();return;}const r=trigger.getBoundingClientRect();menu.style.left=Math.max(8,Math.min(r.left,innerWidth-248))+'px';menu.style.top=(r.bottom+8)+'px';menu.hidden=false;trigger.setAttribute('aria-expanded','true');(menu.querySelector('[aria-current]')||menu.querySelector('button'))?.focus();}
+  function outsideMapMenu(e){if(!e.target.closest('[data-mw=map-menu],#mw-map-submenu'))closeMapMenu();}
+  function mapMenuKey(e){const menu=$('#mw-map-submenu');if(!menu||menu.hidden)return;if(e.key==='Escape'){e.preventDefault();closeMapMenu(true);}else if(['ArrowDown','ArrowUp','Home','End'].includes(e.key)){e.preventDefault();const choices=[...menu.querySelectorAll('button')],current=choices.indexOf(document.activeElement),index=e.key==='Home'?0:e.key==='End'?choices.length-1:(current+(e.key==='ArrowDown'?1:-1)+choices.length)%choices.length;choices[index].focus();}}
+
+  function html(selected){tab=['map','business','analysis','time','tools','scenes','usage','saved'].includes(selected)?selected:'map';theme=new URLSearchParams(location.hash.split('?')[1]).get('theme')||THEMES[0][0];if(!THEMES.some(t=>t[0]===theme))theme=THEMES[0][0];return `<section class="mw-workspace" data-view="${tab}">${header()}${tab==='scenes'&&new URLSearchParams(location.hash.split('?')[1]).has('app')?applications.html():['scenes','usage'].includes(tab)?`<div class="mw-directory"><div class="mw-directory-heading"><div><span class="mw-kicker">${tab==='usage'?'OPERATIONS':'CONNECTED CAPABILITIES'}</span><h2>${{tools:'找到适合当前业务的工具',scenes:'自然资源业务应用',usage:'成果集成与使用监测'}[tab]}</h2><p>统一发现已发布成果，使用时按当前身份校验权限。</p></div><a href="#${path('map')}" class="btn">返回地图工作区 →</a></div>${tab==='usage'?resultUI.usage():resultUI.directory(tab)}</div>`:mapUI.html()}</section>`;}
   function themeRows(){return THEMES.map(([name,label,,pattern],i)=>{const count=catalog().filter(r=>new RegExp(pattern).test(r.name+' '+r.layerTheme)).length;return `<button class="mw-theme ${name===theme?'active':''}" type="button" data-mw="theme" data-id="${esc(name)}"><span class="mw-theme-index">0${i+1}</span><span><strong>${esc(label)}</strong><small>${count} 项目录资源</small></span><span>›</span></button>`;}).join('');}
   function panel(){
     const host=$('#mw-business-panel');if(!host)return;
     const s=state(),rows=objects(),all=available(),t=THEMES.find(t=>t[0]===theme),related=catalog().filter(r=>new RegExp(t[3]).test(r.name+' '+r.layerTheme));
-    if(tab==='analysis')return;
+    if(toolsOpen||aiOpen)return;
     if(tab==='time'&&s.scene?.reference?.series){
       const series=s.scene.reference.series,indicator=series.indicators.find(i=>i.k===seriesKey)||series.indicators[0],max=Math.max(...indicator.data),min=Math.min(...indicator.data),span=max-min||1;
       const points=indicator.data.map((v,i)=>`${24+i*52},${132-(v-min)/span*86}`).join(' ');
@@ -53,19 +63,23 @@ export function createResultsWorkspace(ctx){
   function download(name,text){const url=URL.createObjectURL(new Blob(['\ufeff'+text],{type:'text/csv;charset=utf-8'})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   function businessFunctions(s){const ref=s.scene?.reference;if(!ref)return '';const keys={'自然资源“大管家”':'dc','国土空间规划':'gh','生态修复':'xf','督察执法':'zf'},module=ref.modules.find(m=>m.key===keys[theme]);if(!module)return '';return '<details class="mw-module-functions"><summary>'+esc(module.name)+' · 10项业务功能</summary>'+module.groups.map(g=>g.items.map(f=>`<button type="button" class="mw-app-link" data-mw="function" data-id="${f.id}"><small>${f.id}</small>${esc(f.n)} <span>›</span></button>`).join('')).join('')+'</details>';}
   function referenceStats(s){const stats=s.scene?.reference?.stats;if(!stats||s.region.county)return '';const record=s.region.id==='150000'?stats.META:stats.CITIES.find(c=>String(c.adcode)===s.region.id);if(!record)return '';const land=record.landUse||{};return `<div class="mw-section-title"><h3>区域资源画像</h3><span>参考demo统计</span></div><div class="mw-reference-kpis">${[['森林覆盖率',record.forestCover,'%'],['草原植被盖度',record.grassCover,'%'],['生态红线占比',record.redline_pct,'%'],['采矿权',record.miningRights,'个']].map(([name,value,unit])=>`<div><span>${name}</span><strong>${value??'—'}<small>${value==null?'':unit}</small></strong></div>`).join('')}</div><details class="mw-landuse"><summary>土地利用结构 <small>万亩</small></summary>${Object.entries(land).map(([name,value])=>`<div><span>${esc(name)}</span><b>${value}</b></div>`).join('')}</details><p class="mw-fineprint">读取 NMG_STATS 原始统计，不以已加载示例要素反推。仅供演示。</p>`;}
-  function refresh(next){snapshot=next;const s=next||state();if(!$('#mw-region-label'))return;if(tab==='business'&&$('#ig-layers [name=layerScope]')&&!$('#mw-theme-list'))$('#ig-layers').insertAdjacentHTML('afterbegin',`<div class="mw-business-catalog"><div class="mw-panel-heading"><h3>业务专题</h3><span class="mw-count">8</span></div><div id="mw-theme-list">${themeRows()}</div></div>`);$('#mw-region-label').textContent=s.region.name;$('#mw-context-label').textContent=tab==='business'?theme:{map:'综合资源视图',analysis:'地块综合核查',time:'时间版本对比',saved:'我的地图成果'}[tab]||'综合资源视图';
+  function refresh(next){snapshot=next;const s=next||state();if(!$('#mw-region-label'))return;if(tab==='business'&&$('#ig-layers [name=layerScope]')&&!$('#mw-theme-list'))$('#ig-layers').insertAdjacentHTML('afterbegin',`<div class="mw-business-catalog"><div class="mw-panel-heading"><h3>业务专题</h3><span class="mw-count">8</span></div><div id="mw-theme-list">${themeRows()}</div></div>`);$('#mw-region-label').textContent=s.region.name;$('#mw-context-label').textContent=tab==='business'?'综合看图 / 业务专题 · '+theme:{map:'综合看图 / 综合浏览',analysis:'综合看图 / 地块核查',time:'综合看图 / 时序对比',saved:'我的地图成果',tools:'地图工具 / 共享计算'}[tab]||'综合资源视图';
     const rows=s.result?s.rows:objects().filter(f=>!selectedMetric||f.layerId===selectedMetric);$('#mw-object-count').textContent=rows.length;
     $('#mw-object-list').innerHTML=`<div class="mw-ledger-heading"><strong>${s.result?'空间查询结果':'当前启用图层对象'}</strong><span>${esc(s.region.name)} · ${rows.length} 项 ${selectedMetric?'· 已按图层筛选':''}</span>${command('清除图层筛选','clear-metric')}</div><div class="table-scroll"><table><thead><tr><th>对象名称</th><th>所属图层</th><th>行政区</th><th>操作</th></tr></thead><tbody>${rows.map(f=>`<tr><td>${esc(f.name)}</td><td>${esc(f.layerName)}</td><td>${esc(f.region||'未登记')}</td><td><button class="btn small" data-mw="locate" data-layer="${esc(f.layerId)}" data-id="${esc(f.id)}">定位查看</button></td></tr>`).join('')||'<tr><td colspan="4">当前范围暂无匹配对象；请调整区域或启用图层。</td></tr>'}</tbody></table></div>`;
-    if(tab!=='analysis')panel();
+    aiUI.sync(s);panel();toolsUI.paint();
     $('#ig-feature').classList.toggle('mw-has-feature',!!s.feature||!!s.result);
   }
   function expandDisclosure(selector){const d=$(selector);if(d){d.open=true;d.scrollIntoView({block:'nearest'});}}
   async function click(e){const button=e.target.closest('[data-mw]');if(!button)return;const op=button.dataset.mw,id=button.dataset.id;
     try{
-      if(['left','right'].includes(op)){const shell=$('.mw-map-shell');const collapsed=shell.classList.toggle('mw-hide-'+op);const visible=op==='left'&&matchMedia('(max-width:1100px)').matches?collapsed:!collapsed;button.setAttribute('aria-expanded',String(visible));button.setAttribute('aria-label',(visible?'收起':'展开')+(op==='left'?'图层目录':'业务面板'));}
+      if(op==='ai')openAI();
+      else if(op==='tools')openTools();
+      else if(op==='map-menu')toggleMapMenu();
+      else if(['left','right'].includes(op)){const shell=$('.mw-map-shell');const collapsed=shell.classList.toggle('mw-hide-'+op);const visible=op==='left'&&matchMedia('(max-width:1100px)').matches?collapsed:!collapsed;button.setAttribute('aria-expanded',String(visible));button.setAttribute('aria-label',(visible?'收起':'展开')+(op==='left'?'图层目录':'业务面板'));}
       else if(op==='theme'){theme=id;selectedMetric='';const pattern=THEMES.find(t=>t[0]===theme)[3];mapUI.setActiveLayers(catalog().filter(r=>new RegExp(pattern).test(r.name+' '+r.layerTheme)).map(r=>r.resourceId));$('#mw-theme-list').innerHTML=themeRows();history.replaceState(null,'','#'+path('business',{theme}));refresh();}
-      else if(op==='analysis'||op==='business')go(op,op==='business'?{theme}:{});
-      else if(op==='analyze-feature'){const f=state().feature;if(!f?.coordinates?.length)throw Error('该对象没有可用的地块范围');const ring=f.coordinates.map(p=>[...p]);if(JSON.stringify(ring[0])!==JSON.stringify(ring.at(-1)))ring.push([...ring[0]]);sessionStorage.setItem('mw-analysis-input-'+D().user.id,JSON.stringify({type:'FeatureCollection',features:[{type:'Feature',properties:{id:f.id,name:f.name},geometry:{type:'Polygon',coordinates:[ring]}}]}));go('analysis');}
+      else if(op==='analysis'){if(!openTools('compliance'))go('analysis');}
+      else if(op==='business')go(op,{theme});
+      else if(op==='analyze-feature'){const f=state().feature;let geometry=f?.geometry;if(!geometry&&f?.coordinates?.length){const ring=f.coordinates.map(p=>[...p]);if(JSON.stringify(ring[0])!==JSON.stringify(ring.at(-1)))ring.push([...ring[0]]);geometry={type:'Polygon',coordinates:[ring]};}if(!['Polygon','MultiPolygon'].includes(geometry?.type))throw Error('请选择面状地块');openTools('compliance');toolsUI.setInput({type:'Feature',geometry,properties:{id:f.id,name:f.name}});}
       else if(op==='locate'){$('.mw-object-ledger').open=false;mapUI.selectObject(button.dataset.layer,id);}
       else if(op==='layers'){if(matchMedia('(max-width:1100px)').matches)$('.mw-map-shell').classList.add('mw-hide-left');else $('.mw-map-shell').classList.remove('mw-hide-left');$('[name=layerSearch]').focus();}
       else if(op==='ledger')expandDisclosure('.mw-object-ledger');
@@ -78,18 +92,39 @@ export function createResultsWorkspace(ctx){
       else if(op==='help')ctx.modal('地图业务工作台',`<div class="mw-help-content"><h3>围绕一个空间范围连续完成工作</h3><p>1. 在图层目录选择盟市、旗县，或搜索并加载图层。</p><p>2. 点选图斑查看属性，使用“以此地块进行核查”进入分析。</p><p>3. 在地块核查中绘制、上传或载入示例，校验后运行任务。</p><p>4. 从结果定位地块、下载报告；地图方案和查询历史位于地图底部。</p><p>示例数据仅供演示；时序、三维与其余专项数据待接入。</p></div>`);
     }catch(error){toast(error.message);}
   }
-  async function bind(){const token=++epoch;listener=click;$('.mw-workspace')?.addEventListener('click',listener);if(['tools','scenes','usage'].includes(tab))return;
+  function closeTools(){$('.mw-nav [data-id=tools]')?.classList.remove('is-active');toolsUI.destroy();toolsOpen=false;$('#mw-tools-panel')?.remove();$('#mw-business-panel').hidden=false;$('.mw-map-shell')?.classList.remove('mw-tools-open');panel();}
+  function openTools(id){
+    if(!mapUI.controller())return false;
+    if(aiOpen)closeAI();
+    $('.mw-nav [data-id=tools]')?.classList.add('is-active');
+    $('.mw-map-shell')?.classList.remove('mw-hide-right');$('.mw-map-shell')?.classList.add('mw-tools-open');
+    if(toolsOpen){if(id)toolsUI.show(id);return true;}
+    toolsOpen=true;$('#mw-business-panel').hidden=true;
+    const host=document.createElement('div');host.id='mw-tools-panel';$('#mw-business-panel').after(host);toolsUI.mount(host,id);
+    return true;
+  }
+  function closeAI(){aiUI.unmount();aiOpen=false;$('#mw-ai-panel')?.remove();$('.mw-map-shell')?.classList.remove('mw-ai-open');if($('#mw-business-panel'))$('#mw-business-panel').hidden=false;panel();}
+  function openAI(){
+    if(!mapUI.controller())return toast('请等待地图加载完成');
+    if(!I().resultPermissions.analyze)return toast('需要一张图空间分析权限');
+    if(aiOpen){closeAI();return;}
+    if(toolsOpen)closeTools();aiOpen=true;
+    $('.mw-map-shell').classList.remove('mw-hide-right');$('.mw-map-shell').classList.add('mw-ai-open');$('#mw-business-panel').hidden=true;
+    const host=document.createElement('section');host.id='mw-ai-panel';$('#mw-business-panel').after(host);aiUI.mount(host);
+  }
+  async function bind(){const token=++epoch;listener=click;document.addEventListener('click',outsideMapMenu);document.addEventListener('keydown',mapMenuKey);window.addEventListener('resize',closeMapMenu);$('.mw-nav')?.addEventListener('scroll',()=>closeMapMenu());$('.mw-workspace')?.addEventListener('click',listener);if(tab==='scenes'&&new URLSearchParams(location.hash.split('?')[1]).has('app')){await applications.bind();return;}if(['scenes','usage'].includes(tab))return;await bindMap(token);
+  }
+  async function bindMap(token){
     await mapUI.mount();if(token!==epoch||!mapUI.controller())return;
     if(tab==='business'&&!$('#mw-theme-list')){$('#ig-layers').insertAdjacentHTML('afterbegin',`<div class="mw-business-catalog"><div class="mw-panel-heading"><div><small>BUSINESS THEMES</small><h3>业务专题</h3></div><span class="mw-count">8</span></div><div id="mw-theme-list">${themeRows()}</div></div>`);}
-    if(tab==='analysis'){
-      for(const control of [$('[name=scene]'),$('[data-action=ig-load-map]')]){control.disabled=true;control.title='核查使用当前地图；返回综合看图可切换场景';}
-      if(!I().resultPermissions.analyze){$('#mw-business-panel').innerHTML='<p class="mw-empty">需要成果分析授权</p>';return;}
-      $('#mw-business-panel').innerHTML=`<div class="mw-panel-heading"><div><small>PARCEL ANALYSIS</small><h2>地块综合核查</h2></div><span class="mw-status">示例分析</span></div><div class="mw-steps"><span class="active">输入地块</span><i>→</i><span>运行核查</span><i>→</i><span>查看证据</span></div><details class="mw-check-catalog"><summary>八项专项数据接入情况</summary>${CHECKS.map((name,i)=>`<div><span>${name}</span><small>${i===4||i===5?'示例数据可用':'待接入正式数据'}</small></div>`).join('')}<p>另有规划允许范围示例规则，与正式规划地类分析不同。当前固定运行三项示例规则，不能替代八项完整核查。</p></details><div id="ig-analysis" class="ir-analysis mw-shared-analysis"></div>`;
-      let initial=null;try{const key='mw-analysis-input-'+D().user.id;initial=JSON.parse(sessionStorage.getItem(key)||'null');sessionStorage.removeItem(key);}catch{}
-      cleanup=mountAnalysis($('#ig-analysis'),{esc,initialGeometry:initial,api:(action,payload)=>api(action.startsWith('analysis.')?'integration.'+action:action,payload),attachMap(callback){mapUI.rangeHandler(callback);return {startSelection:kind=>mapUI.controller()?.startSelection(kind),setAnalysisFeatures:features=>mapUI.controller()?.setAnalysisFeatures(features),fitGeometry:geometry=>mapUI.controller()?.fitGeometry(geometry),destroy(){mapUI.rangeHandler(null);}};}});
+    if(tab==='tools'||tab==='analysis'){
+      openTools(tab==='analysis'?'compliance':new URLSearchParams(location.hash.split('?')[1]).get('tool'));
+      if(tab==='analysis'){try{const key='mw-analysis-input-'+D().user.id,initial=JSON.parse(sessionStorage.getItem(key)||'null');sessionStorage.removeItem(key);if(initial)toolsUI.setInput(initial);}catch(e){toast(e.message);}}
     }
+    const toggle=document.createElement('button');toggle.type='button';toggle.className='btn small';toggle.textContent='地图工具';toggle.dataset.mw='tools';$('.mw-panel-toggles')?.append(toggle);
+    if(I().resultPermissions.analyze){const ai=document.createElement('button');ai.type='button';ai.className='btn small mw-ai-trigger';ai.textContent='✦ AI 助手';ai.dataset.mw='ai';$('.mw-panel-toggles')?.append(ai);}
     if(tab==='saved')expandDisclosure('.ig-map-bookmarks');refresh();
   }
-  function destroy(){epoch++;cleanup?.();cleanup=null;$('.mw-workspace')?.removeEventListener('click',listener);listener=null;selectedMetric='';snapshot=null;}
-  return {html,bind,refresh,destroy};
+  function destroy(){epoch++;aiUI.destroy();aiOpen=false;applications.destroy();toolsUI.destroy();toolsOpen=false;closeMapMenu();document.removeEventListener('click',outsideMapMenu);document.removeEventListener('keydown',mapMenuKey);window.removeEventListener('resize',closeMapMenu);$('.mw-workspace')?.removeEventListener('click',listener);listener=null;selectedMetric='';snapshot=null;}
+  return {html,bind,refresh,destroy,openTools,navigateApplication:applications.navigate,launchInWorkspace:applications.launch};
 }

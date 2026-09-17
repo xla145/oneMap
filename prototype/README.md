@@ -14,6 +14,8 @@
 
 新增 `/#/admin/center-integration`、`/#/admin/center-resources`、`/#/admin/center-tools`、`/#/admin/center-operations`，支持待办导入、共享交付、工具审核试运行、归集质检整改入库及本地技术发布。使用端新增综合工作台和资源中心。详见 [四中心功能完善说明](../docs/四中心功能完善说明.md)。
 
+工具中心已补充共享目录 / 部门 / 地市筛选、最新与最热排序、完整卡片与接口详情、截图上传、统一申请入口、类型与模块权限，以及 WKT、界址点文本、CGCS2000 投影和空间检查 / 查询 / 编辑能力。入口为 `/#/front/capabilities`，具体范围与验证记录见 [工具中心需求补齐说明](../docs/工具中心需求补齐说明.md)。
+
 启动：`prototype/.venv/bin/python prototype/server.py --port 5190`（在仓库根目录执行）。新配置增量初始化，已有业务数据保留。外部系统、数据库及 GIS 服务仍需真实对接。
 
 ---
@@ -177,3 +179,33 @@ DEMO_QA_URL=http://127.0.0.1:5193 python3 prototype/check_browser.py
 后台「资讯与知识管理」沿用草稿、发布、停用与权限控制；原技术规范和数据字典映射至技术标准，业务手册和案例经验映射至培训资源。新增 6 篇演示内容，不覆盖既有正文和版本。行业动态为示例文章；下载为正文资料，非原始 PDF 或视频附件。
 
 验证：`python3 -m unittest discover -s prototype -p "test*.py"`；截图：`screenshots/news-center-*.png`。
+
+### 一张图内嵌 AI 地图助手（2026-09-16）
+
+入口：`/#/admin/integration-results` → 地图上方「✦ AI 助手」。需要成果查看及空间分析权限。
+
+已实现业务问题 → 受约束查询计划 → 参数化只读 SQLite SQL → 独立地图图层与表格；支持地区、年份、登记面积、审批状态、高风险等级、分组统计、追问、选区相交与周边距离。示例：
+
+- `查询呼和浩特市的永久基本农田` → `按旗县统计`
+- 新对话：`查询2025年面积超过20亩的建设用地` → `只看未审批的`
+- 地图或结果表选中对象 →「使用选中对象」→ `查询周边1公里的建设用地`
+
+每页 100 条，统计基于全量匹配结果；最多保留 5 个前端结果图层、每人 50 条服务端记录。历史恢复、分页、下载本页均重新检查权限和数据指纹，源数据变化后需重新查询。切换地图场景会清除前端助手状态。手机绘制时面板缩成底部提示条，关闭助手会取消绘制。停止等待仅阻止迟到结果上图，并在返回后取消该记录，不会中断已经发出的模型 HTTP 请求。
+
+默认是明确标识的**本地业务解析**，未连接大模型，也未连接生产数据库。当前使用服务端授权地图的示例要素，建设用地示例为点；不能将其当作真实地块边界。面积按登记属性汇总（亩 / 公顷 / 平方米统一到公顷），没有裁剪、去重或跨表关联。分组统计展示数值及匹配对象，尚未制作行政区分级设色图。“新增”“违法”“合规”等问题需要业务口径，当前提示澄清或使用已有核查工具。
+
+如需接入模型，在启动服务前设置后端环境变量 `MAP_AI_PLANNER_URL`，可选 `MAP_AI_PLANNER_TOKEN`（Bearer）。URL 要求 HTTPS，或本机 localhost / 127.0.0.1 HTTP。这是自定义 JSON 规划网关协议，不能直接填写聊天模型 completions 地址。网关接收：
+
+```json
+{"question":"查询2025年的建设用地","schema":{"fields":{},"layers":[],"enums":{},"groupBy":[],"operators":[],"sort":[],"schemaVersion":1},"previousPlan":null,"instruction":"只返回查询计划 JSON"}
+```
+
+实际 `schema` 由服务端填充授权图层、可用枚举、字段及操作符；不发送完整要素数据。网关应返回 JSON 对象（不要包 Markdown / choices）：
+
+```json
+{"filters":[{"field":"layer_id","op":"in","value":["nmg:construction"]},{"field":"year","op":"eq","value":2025}],"groupBy":"","sort":"name"}
+```
+
+不明确时返回 `{"clarification":"请明确查询年份"}`。字段及操作符必须取自请求 schema；支持 `eq/in/gt/gte/lt/lte/contains`，分组为 `region/county/layer_name/approval`，排序为 `name/area_desc`。网关不能返回 SQL、脚本或任意数据源地址。规划服务 8 秒超时，失败明确报错，不会静默切回规则解析；调用期间不持有全局状态锁，保存前重新校验权限和数据指纹。
+
+验证：`cd prototype && .venv/bin/python -m unittest test_map_ai test_integration_results test_nmg_demo`。页面验收脚本 `check_map_ai_browser.py` 使用 agent-browser，`DEMO_QA_URL` 必须指向独立 QA 数据库。

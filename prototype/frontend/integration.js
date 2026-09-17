@@ -1,9 +1,9 @@
-import {createResultsWorkspace} from './results-workspace.js?v=20260916-map-workspace';
-import {createResultViews} from './integration-results.js?v=20260916-results-round2-final';
+import {createResultsWorkspace} from './results-workspace.js?v=20260916-ai-map-r1';
+import {createResultViews} from './integration-results.js?v=20260916-workspace-apps-r2';
 import {integrationNav,settingsPath} from './integration-routes.js';
 import {createIntegrationAdmin,integrationSections} from './integration-admin.js?v=20260916-results-round2-final';
 import {loadImage} from './workspaces.js';
-import {createIntegrationMap} from './integration-map.js?v=20260916-map-workspace';
+import {createIntegrationMap} from './integration-map.js?v=20260917-properties-1';
 
 export function createIntegration(ctx){
   const {$,esc,btn,tag,api,modal,closeModal,toast,nav}=ctx;
@@ -151,7 +151,7 @@ export function createIntegration(ctx){
     else if(op==='preview'){const [entity,key]=id.split(':');const row=entity==='settings'?I().settings:I()[entity].find(r=>r.id===key);const r=await api('integration.preview',{entity,id:key,rev:row.rev});showPreview(r,entity,key,row.rev);}
     else if(op==='versions'){const [entity,key]=id.split(':');const r=await api('integration.versions',{entity,id:key});modal('历史发布版本',note('恢复只覆盖草稿；核对预览后，需再次发布才对用户生效。')+table(['版本','发布时间','发布人','操作'],r.versions.slice().reverse().map(v=>tr('v'+v.version,esc(v.at||'历史记录'),esc(v.actor),B('恢复到草稿','restore',entity+':'+key+':'+v.version+':'+r.rev)))));}
     else if(op==='restore'){const [entity,key,version,rev]=id.split(':');if(confirm('将所选历史版本恢复为草稿？当前发布版本保持不变。'))await send('restore',{entity,id:key,version:Number(version),rev:Number(rev)});}
-    else if(op==='tab'){nav(route==='integration-settings'?settingsPath(id):usePath({tab:id}));}
+    else if(op==='tab'){if(route==='integration-results'&&['tools','analysis'].includes(id)&&workspaceUI.openTools(id==='analysis'?'compliance':undefined))return true;nav(route==='integration-settings'?settingsPath(id):usePath({tab:id}));}
     else if(op==='page'){page=Number(id);syncCatalog();}
     else if(op==='reset'){query='';kind='全部';theme='';department='';page=1;syncCatalog();}
     else if(op==='hot'){query=id;page=1;await api('integration.search',{query});syncCatalog();}
@@ -159,7 +159,7 @@ export function createIntegration(ctx){
     else if(op==='work-retry'){workKey='';render();}
     else if(op==='work-filter'){nav(usePath(id==='消息'?{view:'messages',unread:1}:id==='收藏'?{view:'favorites'}:{view:'tasks',status:id}));}
     else if(op==='resource-detail'){const r=I().catalog.find(x=>x.id===id);if(!r)throw Error('资源已下架或不可见');const origins={数据:['资源中心','resources'],服务:['资源中心','resources'],工具:['工具中心','portal-tools'],知识:['智能中心','knowledge'],智能体:['智能中心','agents'],应用场景:['应用中心','app-registry']},origin=origins[r.group];modal(r.name,`<dl class="ig-detail"><dt>资源类型</dt><dd>${esc(r.kind)}</dd><dt>来源中心</dt><dd>${esc(origin?.[0]||'统一目录')}</dd><dt>提供部门</dt><dd>${esc(r.placement.department||r.source||'未登记')}</dd><dt>更新时间</dt><dd>${esc(r.updated||'未登记')}</dd><dt>区域 / 主题</dt><dd>${esc(r.placement.region||r.region||'未登记')} · ${esc(r.placement.theme||'未分类')}</dd></dl><div class="actions">${B('进入使用 / 申请','open',id)}${r.placement.manual?link('使用手册',r.placement.manual):''}${I().canManage&&origin?link('到原中心维护','#/admin/'+origin[1]):''}</div>`);}
-    else if(op==='open'){closeModal();sessionStorage.setItem('ig-return-'+D().user.id,location.hash);const r=await api('integration.open',{id});if(r.action){await ctx.loadOnly();await ctx.perform(r.action,r.id);}else nav(r.target);}
+    else if(op==='open'){closeModal();sessionStorage.setItem('ig-return-'+D().user.id,location.hash);const r=await api('integration.open',{id});if(r.action){await ctx.loadOnly();await ctx.perform(r.action,r.id);}else if(route==='integration-results'&&id.startsWith('app:')){nav('/admin/integration-results?'+new URLSearchParams({...Object.fromEntries(params()),tab:'scenes',app:id.slice(4)}));}else if(route==='integration-results'&&I().results.tools.some(t=>t.id===id)&&id.startsWith('resource:')){await ctx.loadOnly();const resourceId=id.slice('resource:'.length),resource=D().resources.find(t=>t.id===resourceId);await ctx.perform(resource?.access==='已授权'?'preview':'resource',resourceId);}else if(route==='integration-results'&&id.startsWith('tool:')&&r.target?.startsWith('/front/capabilities/')){const toolId=decodeURIComponent(r.target.slice('/front/capabilities/'.length));nav('/admin/integration-results?'+new URLSearchParams({...Object.fromEntries(params()),tab:'tools',tool:toolId}));}else nav(r.target);}
     else if(op==='favorite'){await api('centers.favorite',{id});await ctx.reload();}
     else if(op==='message')showMessage(I().messages.find(m=>m.id===id));
     else if(op==='read')await send('message.read',{id});
@@ -181,5 +181,5 @@ export function createIntegration(ctx){
     else if(op==='tenant-asset')form('新增租户空间资源',field('name','名称')+field('description','说明','', 'textarea')+field('url','HTTPS或本站前台入口'),v=>send('tenant.asset',{tenantId:id,values:v}));
     return true;
   }
-  return {render,action,reset(){clearTimeout(timer);clearInterval(carouselTimer);generation++;workspaceUI.destroy();mapUI.destroy();resultUI.reset();analysisCleanup?.();analysisCleanup=null;}};
+  return {navigateApplication:path=>workspaceUI.navigateApplication(path),launchInWorkspace:(...args)=>workspaceUI.launchInWorkspace(...args),render,action,reset(){clearTimeout(timer);clearInterval(carouselTimer);generation++;workspaceUI.destroy();mapUI.destroy();resultUI.reset();}};
 }

@@ -1,7 +1,7 @@
 """Result coverage checks; write only to the isolated QA database."""
 import json,time
 from urllib.error import HTTPError
-import check_integration_domains_browser as b
+import prototype.test.check_integration_domains_browser as b
 b.SESSION='results-complete'
 def page(tab):
     b.page('admin/integration-results?tab='+tab,'一张图成果')

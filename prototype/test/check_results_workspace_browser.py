@@ -1,9 +1,11 @@
 """Map-first UI and extracted NMG assets; run only with an isolated QA database."""
 import json
-import check_integration_browser as b
+import prototype.test.check_integration_browser as b
 b.SESSION='results-redesign'
 
 def click(selector):
+    if selector.startswith("[data-action=ig-tab]") and b.ev("!!document.querySelector("+json.dumps("#mw-map-submenu "+selector)+")"):
+        b.browser("click", "[data-mw=map-menu]")
     # Explicitly scroll nested panels before pointer interaction.
     b.browser('scrollintoview',selector)
     b.browser('click',selector)
@@ -50,7 +52,8 @@ def run():
     assert '17400' in b.ev('document.querySelector(".mw-series-value").textContent')
     for tab in ['tools','scenes','usage','saved','map']:
         click('[data-action=ig-tab][data-id='+tab+']')
-        b.wait('document.querySelector(".mw-workspace")?.dataset.view==='+json.dumps(tab))
+        if tab=='tools':b.wait('!!document.querySelector("#mw-tools-panel")')
+        else:b.wait('document.querySelector(".mw-workspace")?.dataset.view==='+json.dumps(tab))
         if tab in ['saved','map']:b.wait('document.querySelectorAll("[data-ig-layer]").length===28')
         assert not b.ev('document.documentElement.scrollWidth>innerWidth'),tab
     b.browser('select','[name=mapCity]','')
@@ -58,7 +61,11 @@ def run():
     b.browser('set','viewport','390','844');b.browser('reload')
     b.wait('document.querySelectorAll("[data-ig-layer]").length===28')
     assert not b.ev('document.documentElement.scrollWidth>innerWidth')
-    click('[data-mw=left]')
+    click('[data-mw=map-menu]')
+    assert b.ev('(()=>{const r=document.querySelector("#mw-map-submenu").getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&!document.querySelector("#mw-map-submenu").hidden})()')
+    b.browser('press','Escape')
+    assert b.ev('document.querySelector("#mw-map-submenu").hidden')
+    click('.mw-panel-toggles [data-mw=left]')
     assert b.ev('document.querySelector("#ig-layers").getBoundingClientRect().width>0')
     b.browser('screenshot','/tmp/onemap-redesign-verified-mobile.png')
     assert b.browser('errors') in ['', 'No errors']
