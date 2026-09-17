@@ -10,3 +10,5 @@ prototype/data/
 
 bak
 **/.venv/
+
+.env
