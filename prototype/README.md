@@ -1,3 +1,36 @@
+# 一张图本地原型
+
+## 目录与常用命令
+
+| 路径 | 用途 |
+| --- | --- |
+| `server.py` | 启动入口，转到 `backend/server.py` |
+| `backend/` | Python 服务、业务模块、初始化与空间分析 |
+| `index.html`、`app.js`、`style.css` | 页面入口与全局脚本、样式 |
+| `frontend/` | 前端业务模块及地图依赖 |
+| `assets/` | 地图数据、图片和预览素材 |
+| `scripts/` | 地图构建、数据导入和测试运行脚本 |
+| `test/` | Python / JavaScript 测试和浏览器验收脚本 |
+| `reports/` | 验收 JSON 结果与 `screenshots/` 截图 |
+| `docs/` | 历史验证记录 |
+| `data/` | 本地运行数据（不纳入 Git） |
+
+以下命令在仓库根目录运行：
+
+```sh
+prototype/.venv/bin/python prototype/server.py --port 5190
+prototype/.venv/bin/python prototype/scripts/test.py
+npm --prefix prototype test
+npm --prefix prototype run build:map
+```
+
+后端沿用同级模块导入；测试运行器会设置模块路径。单独运行某个后端测试时，可在 `prototype/` 下执行 `PYTHONPATH=backend .venv/bin/python -m unittest discover -s test -p 'test_centers.py'`。
+浏览器验收脚本位于 `test/check_*.py`，请通过 `DEMO_QA_URL` 指向使用独立数据库启动的服务；本地验收结果统一写入 `reports/`，部分专项脚本仍写入 `/tmp/`。
+
+以下保留各阶段功能说明与历史记录。
+
+---
+
 # 综合集成后台管理流程（2026-09-16）
 
 新增分组导航、可下钻运行总览、成果查看/分析授权、待办版本同步与失败重试、人工核对和接入计划。入口：http://127.0.0.1:5190/#/admin/center-integration?tab=overview 。实现范围与验证见 [后台管理流程实现说明](../docs/综合集成后台管理流程实现说明.md)。
@@ -50,9 +83,9 @@
 
 # 自然资源一张图服务平台 Demo
 
-前台已按蓝白门户参考样式调整：应用中心支持区域、业务和类型筛选、关键词查询及分页；应用、资源、智能体和知识列表配有业务预览图。应用优先使用已审核的上传截图，其次使用封面/图标，没有图片时匹配 `assets/previews/` 下的本地业务示意图。示意图不代表真实业务系统截图。桌面与手机预览见 `screenshots/blue-*.png`。
+前台已按蓝白门户参考样式调整：应用中心支持区域、业务和类型筛选、关键词查询及分页；应用、资源、智能体和知识列表配有业务预览图。应用优先使用已审核的上传截图，其次使用封面/图标，没有图片时匹配 `assets/previews/` 下的本地业务示意图。示意图不代表真实业务系统截图。桌面与手机预览见 `reports/screenshots/blue-*.png`。
 
-详细正文补充版已上线：递归地图目录与布局组装、图片上传和完整预览、项目及合规督办统计、任务通知、规则库引用、事件过滤/优先级、Pull/ACK及通道监控。见 [详细功能补充完成说明](../docs/应用中心详细功能补充完成说明.md)。验证命令：`python3 -m unittest discover -s prototype -p 'test*.py'` 和 `node prototype/test_workspaces.mjs`。
+详细正文补充版已上线：递归地图目录与布局组装、图片上传和完整预览、项目及合规督办统计、任务通知、规则库引用、事件过滤/优先级、Pull/ACK及通道监控。见 [详细功能补充完成说明](../docs/应用中心详细功能补充完成说明.md)。验证命令：`prototype/.venv/bin/python prototype/scripts/test.py` 和 `node prototype/test/test_workspaces.mjs`。
 
 2026-09-15 更新：新增统一门户、应用中心、地图场景、流程表单、业务办理和公共支撑；保留原智能中心能力。交付范围、验证与待接入能力见 [原型修改完成说明](../docs/应用中心与智能中心原型修改完成说明.md)。
 
@@ -93,9 +126,9 @@ npm ci
 npm run build:map
 ```
 
-需要重新导入 demo 地图配置与边界时，在项目根目录运行 `python3 prototype/import-demo-map.py`；原 demo 保持原样。
+需要重新导入 demo 地图配置与边界时，在项目根目录运行 `python3 prototype/scripts/import-demo-map.py`；原 demo 保持原样。
 
-浏览器回归使用独立数据库服务：`DEMO_QA_URL=http://<本机局域网 IP>:5198 python3 prototype/check_map_browser.py`。该脚本验证场景加载、图层和权限过滤、视图保留、图斑点击、绘制量算及移动布局。
+浏览器回归使用独立数据库服务：`DEMO_QA_URL=http://<本机局域网 IP>:5198 python3 prototype/test/check_map_browser.py`。该脚本验证场景加载、图层和权限过滤、视图保留、图斑点击、绘制量算及移动布局。
 
 ## 前台门户入口
 
@@ -166,11 +199,11 @@ node --check prototype/app.js
 
 ```sh
 python3 prototype/server.py --port 5193 --db /tmp/onemap-qa-new.sqlite3
-DEMO_QA_URL=http://127.0.0.1:5193 python3 prototype/check_capabilities_browser.py
-DEMO_QA_URL=http://127.0.0.1:5193 python3 prototype/check_browser.py
+DEMO_QA_URL=http://127.0.0.1:5193 python3 prototype/test/check_capabilities_browser.py
+DEMO_QA_URL=http://127.0.0.1:5193 python3 prototype/test/check_browser.py
 ```
 
-首次交互测试使用新数据库；重复执行可换新的数据库文件。详细记录见 [验证记录](验证记录.md)，修改方案见 [原型修改方案](../docs/智能中心原型修改方案.md)。
+首次交互测试使用新数据库；重复执行可换新的数据库文件。详细记录见 [验证记录](docs/验证记录.md)，修改方案见 [原型修改方案](../docs/智能中心原型修改方案.md)。
 
 ## 资讯中心
 
@@ -178,7 +211,7 @@ DEMO_QA_URL=http://127.0.0.1:5193 python3 prototype/check_browser.py
 
 后台「资讯与知识管理」沿用草稿、发布、停用与权限控制；原技术规范和数据字典映射至技术标准，业务手册和案例经验映射至培训资源。新增 6 篇演示内容，不覆盖既有正文和版本。行业动态为示例文章；下载为正文资料，非原始 PDF 或视频附件。
 
-验证：`python3 -m unittest discover -s prototype -p "test*.py"`；截图：`screenshots/news-center-*.png`。
+验证：`prototype/.venv/bin/python prototype/scripts/test.py`；截图：`reports/screenshots/news-center-*.png`。
 
 ### 一张图内嵌 AI 地图助手（2026-09-16）
 
@@ -208,4 +241,4 @@ DEMO_QA_URL=http://127.0.0.1:5193 python3 prototype/check_browser.py
 
 不明确时返回 `{"clarification":"请明确查询年份"}`。字段及操作符必须取自请求 schema；支持 `eq/in/gt/gte/lt/lte/contains`，分组为 `region/county/layer_name/approval`，排序为 `name/area_desc`。网关不能返回 SQL、脚本或任意数据源地址。规划服务 8 秒超时，失败明确报错，不会静默切回规则解析；调用期间不持有全局状态锁，保存前重新校验权限和数据指纹。
 
-验证：`cd prototype && .venv/bin/python -m unittest test_map_ai test_integration_results test_nmg_demo`。页面验收脚本 `check_map_ai_browser.py` 使用 agent-browser，`DEMO_QA_URL` 必须指向独立 QA 数据库。
+验证：`cd prototype && PYTHONPATH=backend .venv/bin/python -m unittest discover -s test`。页面验收脚本 `check_map_ai_browser.py` 使用 agent-browser，`DEMO_QA_URL` 必须指向独立 QA 数据库。

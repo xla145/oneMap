@@ -5,7 +5,7 @@ from copy import deepcopy
 import json
 
 SCENE_ID='nmg-reference-demo'
-ROOT=Path(__file__).resolve().parent/'assets'/'nmg-demo'/'data'
+ROOT=Path(__file__).resolve().parents[1]/'assets'/'nmg-demo'/'data'
 
 @lru_cache(maxsize=1)
 def data():

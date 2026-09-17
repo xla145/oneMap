@@ -15,7 +15,7 @@ import threading
 from capabilities import require
 import portal_management as pm
 
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parents[1]
 START=time.monotonic()
 RATE=defaultdict(deque)
 RATE_LOCK=threading.Lock()

@@ -180,7 +180,7 @@ def spatial_filter(context,question,s,u):
     if value is None:
         require(not radius and not re.search('范围内|周边|圈选|选中',question),'请先绘制范围或使用地图选中对象，再查询范围内 / 周边对象')
         return None,None
-    import prototype.test.tool_center as tc
+    import tool_center as tc
     from shapely.errors import GEOSException
     try:g=tc.geometry(value)
     except (ValueError,GEOSException):raise cap.Invalid('选区几何无效')

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {convert,polygon,area,buffer} from './frontend/public-tools.js';
+import {convert,polygon,area,buffer} from '../frontend/public-tools.js';
 const origin=convert(0,0,'forward');assert.ok(Math.abs(origin.x)<1e-8&&Math.abs(origin.y)<1e-8);
 const projected=convert(111.7,40.8,'forward'),back=convert(projected.x,projected.y,'inverse');
 assert.ok(Math.abs(back.x-111.7)<1e-9&&Math.abs(back.y-40.8)<1e-9);

@@ -4,7 +4,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import crypto from 'node:crypto';
 import {fileURLToPath} from 'node:url';
-const root=path.dirname(fileURLToPath(import.meta.url));
+const root=fileURLToPath(new URL("../", import.meta.url));
 const source=path.join(root,'../bak/内蒙古一张图demo');
 const output=path.join(root,'assets/nmg-demo');
 fs.mkdirSync(path.join(output,'data'),{recursive:true});

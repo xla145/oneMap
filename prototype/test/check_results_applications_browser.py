@@ -1,5 +1,5 @@
 """Application runtimes in the results shell; run only against an isolated QA DB."""
-import prototype.test.check_integration_browser as b
+import check_integration_browser as b
 b.SESSION='apps-check'
 b.browser('open',b.BASE)
 b.browser('set','viewport','1440','1000')

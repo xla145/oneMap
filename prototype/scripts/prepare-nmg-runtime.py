@@ -1,8 +1,8 @@
 """Normalize the extracted demo geometry; retain unmodified originals alongside it."""
 import runpy,json
 from pathlib import Path
-root=Path(__file__).resolve().parent
-conversion=runpy.run_path(str(root/'import-demo-map.py'))
+root=Path(__file__).resolve().parents[1]
+conversion=runpy.run_path(str(root/'scripts/import-demo-map.py'))
 convert=conversion['coordinates']
 p=root/'assets/nmg-demo/data'
 n=json.loads((p/'nmg_nr.json').read_text())

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {assetGraph,references,indexState,onlineSnapshot} from './frontend/intelligence-links.js';
+import {assetGraph,references,indexState,onlineSnapshot} from '../frontend/intelligence-links.js';
 const asset=(id,fields={})=>{const row={id,name:id,status:'已发布',version:1,...fields};return {...row,published:{...row}};};
 const resource=asset('r1'), other=asset('r2');
 const agent=asset('a1',{steps:'检索资源\n展示结果',resourceIds:'r1',templateIds:'c1'});

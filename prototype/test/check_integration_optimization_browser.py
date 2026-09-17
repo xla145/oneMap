@@ -1,7 +1,7 @@
 """Optimization regression. Run against isolated QA storage only."""
 import base64,json,os,struct,tempfile,time,zlib
 from pathlib import Path
-import prototype.test.check_integration_browser as b
+import check_integration_browser as b
 b.SESSION='integration-opt'
 
 def png():

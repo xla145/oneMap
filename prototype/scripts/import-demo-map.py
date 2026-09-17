@@ -4,7 +4,7 @@ import math
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT.parent / 'bak' / '内蒙古一张图demo'
 html = (SOURCE / '内蒙古自然资源一张图.html').read_text()
 match = re.search(r"const\s+TK\s*=\s*(['\"])([^'\"]+)\1", html)

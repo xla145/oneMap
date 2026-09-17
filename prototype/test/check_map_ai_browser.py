@@ -1,5 +1,5 @@
 """AI map integration smoke. Run against an isolated QA database."""
-import prototype.test.check_integration_browser as b
+import check_integration_browser as b
 b.SESSION='map-ai-qa'
 b.browser('open',b.BASE)
 b.browser('set','viewport','1440','1000')

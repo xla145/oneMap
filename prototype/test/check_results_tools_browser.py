@@ -1,6 +1,6 @@
 """Shared-map tool chaining; DEMO_QA_URL must point at an isolated QA database."""
 import json
-import prototype.test.check_integration_browser as b
+import check_integration_browser as b
 b.SESSION='shared-tools-final'
 b.browser('open',b.BASE)
 b.browser('set','viewport','1440','1000')

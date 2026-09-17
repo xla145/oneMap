@@ -6,7 +6,9 @@ import tempfile
 import time
 from pathlib import Path
 BASE=os.environ.get('DEMO_QA_URL','http://127.0.0.1:5217')
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parents[1]/'reports'
+ROOT.mkdir(exist_ok=True)
+(ROOT/'screenshots').mkdir(exist_ok=True)
 SESSION='analysis-acceptance'
 checks=[]
 def browser(*args,script=None):

@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node test_workspaces.mjs",
-    "build:map": "node build-map.mjs"
+    "test": "node --test test/test_*.mjs",
+    "build:map": "node scripts/build-map.mjs"
   },
   "dependencies": {
     "ol": "10.10.0"

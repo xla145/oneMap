@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {periodMatches,selectCases,summarize,layerTree} from './frontend/workspaces.js';
+import {periodMatches,selectCases,summarize,layerTree} from '../frontend/workspaces.js';
 const now=new Date('2026-09-15T12:00:00');
 assert.equal(periodMatches('2026-09-02T00:00:00','近14天',now),true);
 assert.equal(periodMatches('2026-09-01T23:59:59','近14天',now),false);

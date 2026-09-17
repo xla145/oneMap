@@ -6,7 +6,7 @@ from server import execute, bootstrap, user_for
 from capabilities import Invalid
 import portal_management as pm
 import centers
-import prototype.test.tool_center as tc
+import tool_center as tc
 
 
 class ToolCenterTests(unittest.TestCase):

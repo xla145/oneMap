@@ -4,7 +4,7 @@ import os
 import time
 from pathlib import Path
 from urllib.request import Request, urlopen
-import prototype.test.check_portal_admin_browser as b
+import check_portal_admin_browser as b
 
 
 def state(user='admin',mode='admin'):

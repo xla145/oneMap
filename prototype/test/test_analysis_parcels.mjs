@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {parcelCollection,updateParcel} from './frontend/analysis-parcels.js';
+import {parcelCollection,updateParcel} from '../frontend/analysis-parcels.js';
 const geometry={type:'Polygon',coordinates:[[[0,0],[1,0],[1,1],[0,0]]]};
 const initial=parcelCollection(JSON.stringify({type:'FeatureCollection',features:[{type:'Feature',geometry,properties:{id:'parcel-2',name:'保留'}}]}));
 const added=updateParcel(initial,null,geometry);

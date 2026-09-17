@@ -502,7 +502,7 @@ def run_tool(s,r,p):
     from shapely.validation import explain_validity
     from pyproj import Transformer
     engine=r['engine']
-    import prototype.test.tool_center as tc
+    import tool_center as tc
     if engine=='coordinate':return tc.coordinate(p)
     if engine=='buffer':
         lon=p.get('x');lat=p.get('y');distance=p.get('distance',100)

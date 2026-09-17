@@ -8,7 +8,9 @@ import subprocess
 
 BASE=os.environ.get('DEMO_QA_URL','http://127.0.0.1:5217')
 SESSION='public-route-regression'
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parents[1]/'reports'
+ROOT.mkdir(exist_ok=True)
+(ROOT/'screenshots').mkdir(exist_ok=True)
 checks=[]
 
 def browser(*args,script=None):

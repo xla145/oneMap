@@ -1,6 +1,6 @@
 """Content workflows; run against an isolated QA database only."""
 import json
-import prototype.test.check_portal_admin_browser as qa
+import check_portal_admin_browser as qa
 qa.SESSION='content-admin-qa'
 
 def main():

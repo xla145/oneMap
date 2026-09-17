@@ -10,7 +10,9 @@ from urllib.error import HTTPError
 
 BASE=os.environ.get('DEMO_QA_URL','http://127.0.0.1:5197')
 SESSION='portal-admin-qa'
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parents[1]/'reports'
+ROOT.mkdir(exist_ok=True)
+(ROOT/'screenshots').mkdir(exist_ok=True)
 
 def browser(*args,script=None):
     p=subprocess.run(['agent-browser','--session',SESSION,*args],input=script,text=True,capture_output=True,timeout=40)

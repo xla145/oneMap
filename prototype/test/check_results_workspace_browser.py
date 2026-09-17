@@ -1,6 +1,6 @@
 """Map-first UI and extracted NMG assets; run only with an isolated QA database."""
 import json
-import prototype.test.check_integration_browser as b
+import check_integration_browser as b
 b.SESSION='results-redesign'
 
 def click(selector):

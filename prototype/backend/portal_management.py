@@ -62,7 +62,7 @@ def can_material(s,u,r):
 def bootstrap(s,u,mode):
     p=migrate(s); full=mode=='admin' and u['role']=='平台管理员'
     result={e:[public_row(r) for row in p[e] if (r:=deepcopy(row) if full else live(row)) and (full or (can_tool(u,r,s) if e=='tools' else can_material(s,u,r)))] for e in ['tools','materials']}
-    from prototype.test.tool_center import enrich
+    from tool_center import enrich
     if not full:result['tools']=[enrich(s,r) for r in result['tools']]
     if full:result['toolPermissions']=deepcopy(p.get('toolPermissions',[]));result['toolPermissionsRev']=p.get('toolPermissionsRev',1)
     result['registrations']=[deepcopy(r) for r in p['registrations'] if full or r['createdBy']==u['id']]
@@ -84,7 +84,7 @@ def portal_role(u):
 def can_tool(u,r,s=None):
     if u['role']=='平台管理员':return True
     if r.get('audience','全部用户') not in ['全部用户',portal_role(u)]:return False
-    from prototype.test.tool_center import MODULES
+    from tool_center import MODULES
     return not any(rule['role']==portal_role(u) and rule['category'] in ['*',r.get('category')] and rule['module'] in ['*',r.get('module') or MODULES.get(r['engine'],'外部服务')] for rule in (s or {}).get('portalManagement',{}).get('toolPermissions',[]))
 
 def tool(s,key,engine=None,u=None):
@@ -159,7 +159,7 @@ def execute(s,u,action,p):
         return portal_keys.execute(s,u,action,p)
     admin(u)
     if action=='portal.toolPermissions':
-        from prototype.test.tool_center import MODULES
+        from tool_center import MODULES
         require(p.get('rev')==m.get('toolPermissionsRev',1),'权限配置已更新，请刷新',409)
         rows=p.get('rules');require(isinstance(rows,list) and len(rows)<=100,'权限规则最多100条')
         result=[]
@@ -213,7 +213,7 @@ def execute(s,u,action,p):
             except (TypeError,ValueError):require(False,'排序必须为整数')
             require(0<=r['order']<=9999,'排序范围为 0–9999')
             if entity=='tools':
-                from prototype.test.tool_center import MODULES
+                from tool_center import MODULES
                 for key,kind in [('requestParameters',list),('inputExample',dict),('outputExample',dict)]:
                     if r.get(key):
                         try:value=json.loads(r[key])
