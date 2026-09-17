@@ -1,4 +1,0 @@
-interface:
-  display_name: "Release Packaging"
-  short_description: "根据 commits 整理更新并打包"
-  default_prompt: "Use $release-notes to summarize commits and package a beta or prod updater release."

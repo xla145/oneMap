@@ -1,5 +1,5 @@
 import {createBootstrapCache} from './frontend/bootstrap-cache.js?v=20260917-1';
-import {createOperationsCenter,operationMenu,operationLabels} from './frontend/operations-center.js?v=20260916-ops5';
+import {createOperationsCenter,operationMenu,operationLabels,operationSection} from './frontend/operations-center.js?v=20260917-config1';
 import {integrationNav,legacyIntegration} from './frontend/integration-routes.js';
 import {createIntelligenceAdmin} from './frontend/intelligence-admin.js?v=20260916-ops5';
 import {indexState} from './frontend/intelligence-links.js';
@@ -8,7 +8,7 @@ import { createIntegration } from './frontend/integration.js?v=20260917-properti
 import { createCenters } from './frontend/centers.js?v=20260916-centers';
 import { createPortalOperations } from './frontend/portal-operations.js';
 import { createPortalAdmin } from './frontend/portal-admin.js?v=20260916-intelligence-links';
-import { createPublicPortal } from './frontend/public-portal.js?v=20260916-direct-use';
+import { createPublicPortal } from './frontend/public-portal.js?v=20260917-tool-entry2';
 import { renderNews, newsCategory, newsCategories, searchNews, recommendedNews, newsDownloadText } from './frontend/news.js?v=20260915-1';
 import { previewSource } from './frontend/previews.js';
 import { randomUUID } from './frontend/uuid.js';
@@ -296,11 +296,11 @@ function stats(items) {
 }
 function adminMenu(navs){
   let saved={};try{saved=JSON.parse(localStorage.getItem('onemap-admin-menu')||'{}');}catch{}
-  const current=route==='operations'?location.hash.split('?')[0].replace(/^#\/admin\//,'').split('/').slice(0,['overview','todos'].includes(routeId)?2:3).join('/'):['public-portal','center-integration'].includes(route)?route+'?tab='+(new URLSearchParams(location.hash.split('?')[1]).get('tab')||(route==='public-portal'?'topics':'overview')):route;
+  const current=route==='operations'?operationSection(location.hash.split('?')[0].split('/').slice(3,5).join('/')):['public-portal','center-integration'].includes(route)?route+'?tab='+(new URLSearchParams(location.hash.split('?')[1]).get('tab')||(route==='public-portal'?'topics':'overview')):route;
   const groups=[
     ['integration','综合集成','grid',integrationNav.map(n=>n[0])],
     ['resources','资源中心','database',['center-resources','approvals','grants']],
-    ['operations','运营中心','layers',[...operationMenu,'resources','quality','portal-monitor','portal-audit']],
+    ['operations','运营中心','layers',operationMenu],
     ['tools','工具中心','tool',['center-tools','portal-tools','portal-keys']],
     ['apps','应用中心','grid',['app-registry','scene-templates','widgets','business-models','workflows','cases','business-assets']],
     ['intelligence','智能中心','sparkles',['agents','metadata-annotation','knowledge','indicators','corpora','intelligence-evaluations','memories','calls','intelligence-links']],
@@ -2043,7 +2043,7 @@ async function portalAction(action,id,el){
       modal(d.name,`<div class="portal-document-meta">${tag(newsCategory(d))}<span>来源：${esc(d.source)}</span><span>更新：${esc(String(d.updated||'').slice(0,10))}</span><span>版本 v${d.version}.0</span></div><div class="portal-document-body news-document">${d.body.split(/\n\s*\n/).map(p=>`<p>${esc(p)}</p>`).join("")}</div><div class="news-related"><h3>关联资料</h3>${(D.portalManagement?.materials||[]).filter(r=>r.contentId===d.id).map(r=>btn(esc(r.name),"pm-download",r.id,"small","download")).join("")||"<p>暂无关联附件</p>"}</div><div class="news-related"><h3>相关阅读</h3>${related.map(r=>`<button data-action="portalKnowledge" data-id="${esc(r.id)}">${esc(r.name)} ${icon('arrow')}</button>`).join('')||'<p class="muted">暂无相关资讯</p>'}</div><div class="form-footer">${btn("下载正文（TXT）","newsDownload",d.id,"","download")}${btn("就此内容提问","portalQuestion","解释"+d.name,"primary","sparkles")}</div>`,true);return true;
     }
     case "portalScenarios":modal("选择业务场景",`<div class="portal-scenario-dialog">${D.agents.map(a=>`<button data-action="portalQuestion" data-agent="${a.id}" data-id="${esc(a.question)}"><span class="tile">${icon(a.icon)}</span><span><strong>${esc(a.name)}</strong><small>${esc(a.question)}</small></span>${icon("arrow")}</button>`).join("")}</div>`,true);return true;
-    case "portalGuide":modal("门户使用指南",`<div class="portal-guide-content"><h3>发现资源</h3><p>首页搜索会展示数据、工具和资讯结果。也可在数据服务中按主题、地区和类型筛选，详情页提供字段、地图和获取方式。</p><h3>使用智能服务</h3><p>能力服务提供坐标转换、面积量算和点缓冲区分析，办事服务内的智能问答支持资源检索、知识问答与指标分析，并提供相关办事指南与办理入口。</p><h3>申请资源</h3><p>将可申请资源加入清单，填写用途和使用期限后提交。在右上角“我的申请”中查看办理进度；授权后可查看或下载已有的示例数据；实际下载能力以资源绑定情况为准。</p><h3>接续任务</h3><p>个人中心保留历史会话和偏好。进入助手后点击“接续任务”，可以在新会话中继续之前的查询。</p></div>`,true);return true;
+    case "portalGuide":modal("门户使用指南",`<div class="portal-guide-content"><h3>发现资源</h3><p>首页搜索会展示数据、工具和资讯结果。也可在数据服务中按主题、地区和类型筛选，详情页提供字段、地图和获取方式。</p><h3>使用智能服务</h3><p>工具中心提供坐标转换、面积量算和点缓冲区分析，办事服务内的智能问答支持资源检索、知识问答与指标分析，并提供相关办事指南与办理入口。</p><h3>申请资源</h3><p>将可申请资源加入清单，填写用途和使用期限后提交。在右上角“我的申请”中查看办理进度；授权后可查看或下载已有的示例数据；实际下载能力以资源绑定情况为准。</p><h3>接续任务</h3><p>个人中心保留历史会话和偏好。进入助手后点击“接续任务”，可以在新会话中继续之前的查询。</p></div>`,true);return true;
     default:return false;
   }
 }

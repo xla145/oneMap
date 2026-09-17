@@ -1,0 +1,19 @@
+{
+  "date": "2026-09-17",
+  "base": "http://127.0.0.1:5207",
+  "database": "/tmp/onemap-operations-simple-20260917.sqlite3",
+  "checks": [
+    "管理员建立归集任务并下发；报送人保存和提交本人材料",
+    "管理员审核后直接在报送详情执行质检，负面积产生问题并阻止入库",
+    "同一详情派发整改、反馈修正数据、复检办结",
+    "同一详情按标准创建空表，自动预填四项字段映射，执行入库成功",
+    "入库成功后直接进入同一资产编目，保持资源标识",
+    "从资产登记服务时预选同一资源，发布后试查询返回 area=3 的一行数据",
+    "告警确认、提交处理；异常未恢复时关闭被阻止",
+    "修复独立测试批次并再次巡检后，告警验证关闭成功",
+    "已有目标表的手机映射状态：四项同名字段预选，390px 视口页面宽度为390px；表格只在容器内滚动"
+  ],
+  "automation": "agent-browser DOM interaction; native datetime filled through value/input event; form submissions through requestSubmit. Alarm source repair used the business API on the isolated QA fixture.",
+  "backendTests": 268,
+  "frontendTests": 13
+}

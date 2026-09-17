@@ -1,0 +1,102 @@
+{
+  "base": "http://127.0.0.1:5208",
+  "checks": [
+    "可视化标准：新增字段、阻止重复、保存草稿、阻止未保存发布、发布与持久化",
+    "发布后的标准实际出现在归集任务选择项",
+    "配置使用情况显示真实引用的归集任务，并可定位该任务",
+    "勾选规则保存并发布模板，后端保存两项规则快照",
+    "规则修订后模板标记失效；重新保存发布后恢复可用",
+    "外部来源保存与检查均保持待联调，未假报连接成功",
+    "目录、存储位置、告警规则均在当前页面保存到真实业务记录",
+    "配置搜索过滤真实列表"
+  ],
+  "views": [
+    {
+      "config": "standards",
+      "editor": true,
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "config": "models",
+      "editor": true,
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "config": "rules",
+      "editor": true,
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "config": "sources",
+      "editor": true,
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "config": "directories",
+      "editor": true,
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "config": "domains",
+      "editor": true,
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "config": "alertRules",
+      "editor": true,
+      "scroll": 1440,
+      "width": 1440
+    },
+    {
+      "config": "standards",
+      "editor": true,
+      "scroll": 390,
+      "width": 390
+    },
+    {
+      "config": "models",
+      "editor": true,
+      "scroll": 390,
+      "width": 390
+    },
+    {
+      "config": "rules",
+      "editor": true,
+      "scroll": 390,
+      "width": 390
+    },
+    {
+      "config": "sources",
+      "editor": true,
+      "scroll": 390,
+      "width": 390
+    },
+    {
+      "config": "directories",
+      "editor": true,
+      "scroll": 390,
+      "width": 390
+    },
+    {
+      "config": "domains",
+      "editor": true,
+      "scroll": 390,
+      "width": 390
+    },
+    {
+      "config": "alertRules",
+      "editor": true,
+      "scroll": 390,
+      "width": 390
+    }
+  ],
+  "permission": "非管理员无法访问配置编辑",
+  "browserErrors": "",
+  "automation": "DOM input/change/click and requestSubmit through agent-browser; read-only API assertions"
+}

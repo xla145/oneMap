@@ -22,7 +22,7 @@ def browser(*args,script=None):
 
 def evaluate(script):return browser('eval','--stdin',script=script)['result']
 
-routes=[('home','一张图'),('data','数据服务'),('catalog','数据服务'),('search?q=矿业权','综合搜索'),('data/r_scene_demo','耕地监测示例图层'),('map','地图浏览'),('capabilities','能力服务'),('tools','能力服务'),('capabilities/coordinate','坐标转换'),('capabilities/area','面积量算'),('capabilities/buffer','点缓冲区分析'),('services','办事服务'),('services/notice','国土空间规划公示'),('services/progress','用地审批进度查询'),('knowledge','资讯下载'),('landscape','大美内蒙古'),('landscape/ecology','北疆安全生态屏障'),('requests','我的咨询与意见'),('app-center','应用中心'),('internal-home','资源汇聚一张图'),('assistant','资源检索助手')]
+routes=[('home','一张图'),('data','数据服务'),('catalog','数据服务'),('search?q=矿业权','综合搜索'),('data/r_scene_demo','耕地监测示例图层'),('map','地图浏览'),('capabilities','工具中心'),('tools','工具中心'),('capabilities/coordinate','坐标转换'),('capabilities/area','面积量算'),('capabilities/buffer','点缓冲区分析'),('services','办事服务'),('services/notice','国土空间规划公示'),('services/progress','用地审批进度查询'),('knowledge','资讯下载'),('landscape','大美内蒙古'),('landscape/ecology','北疆安全生态屏障'),('requests','我的咨询与意见'),('app-center','应用中心'),('internal-home','资源汇聚一张图'),('assistant','资源检索助手')]
 try:
     for width in [1440,1024,390]:
         browser('set','viewport',str(width),'900')

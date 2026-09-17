@@ -1,4 +1,4 @@
-import {createToolCenter} from './tool-center.js?v=20260916-direct-use';
+import {createToolCenter} from './tool-center.js?v=20260917-tool-entry';
 import {landscapePage,topicCover,topicCoverAlt,guideFor} from './landscape.js';
 import {analysisPage,mountAnalysis} from './analysis-workbench.js';
 import {mountSceneMap} from './map.js?v=public-v1';
@@ -62,8 +62,8 @@ export function createPublicPortal(ctx){
     return toolCenter.detail(t)+(allowed&&!t.id.startsWith('resource:')&&!t.engine.startsWith('spatial-')?capabilityRunner(id).replaceAll('<h1>','<h2>').replaceAll('</h1>','</h2>'):'');
   }
   function capabilityRunner(id){
-    if(!id)return title('能力服务','在线空间分析、项目选址核查与共享工具，按需使用专业能力。')+`<div class="pub-grid">${tools().map(t=>`<article class="panel pub-tool-card pub-capability-card"><div class="pub-capability-header"><span class="tile">${icon(t.icon)}</span><div><small>${esc(t.category)}</small><h2>${esc(t.name)}</h2></div></div><p>${esc(t.description)}</p><div class="pub-capability-footer">${tag(t.available?'可用':'待接入')}${link('capabilities',t.available?'开始使用':'查看说明',t.id,'btn '+(t.available?'primary':''))}</div></article>`).join('')}</div><section class="pub-section">${section('共享工具目录','已发布的工具资源，按权限申请使用。','search')}<div class="pub-grid">${D().resources.filter(r=>r.type==='工具服务').map(r=>card(r)).join('')}</div></section>`;
-    const t=byId(tools(),id);if(!t)return capabilityTitle('工具已下架或不存在','请从能力服务选择已发布工具。');
+    if(!id)return title('工具中心','在线空间分析、项目选址核查与共享工具，按需使用专业能力。')+`<div class="pub-grid">${tools().map(t=>`<article class="panel pub-tool-card pub-capability-card"><div class="pub-capability-header"><span class="tile">${icon(t.icon)}</span><div><small>${esc(t.category)}</small><h2>${esc(t.name)}</h2></div></div><p>${esc(t.description)}</p><div class="pub-capability-footer">${tag(t.available?'可用':'待接入')}${link('capabilities',t.available?'开始使用':'查看说明',t.id,'btn '+(t.available?'primary':''))}</div></article>`).join('')}</div><section class="pub-section">${section('共享工具目录','已发布的工具资源，按权限申请使用。','search')}<div class="pub-grid">${D().resources.filter(r=>r.type==='工具服务').map(r=>card(r)).join('')}</div></section>`;
+    const t=byId(tools(),id);if(!t)return capabilityTitle('工具已下架或不存在','请从工具中心选择已发布工具。');
     const engine=t.engine;
     if(['compliance','overlay'].includes(engine))return capabilityTitle(t.name,t.description)+'<div id="analysis-workbench"><p class="pub-note">正在加载分析工作台…</p></div>';
     if(engine==='external')return capabilityTitle(t.name,t.description)+`<section class="panel pub-content"><p>该工具由外部服务提供。</p>${btn('打开工具','pub-external',id,'primary')}</section>`;

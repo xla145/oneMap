@@ -1,0 +1,823 @@
+{
+  "pages": [
+    {
+      "width": 1440,
+      "route": "overview",
+      "heading": "工作台",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "todos",
+      "heading": "我的运营待办",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "settings",
+      "heading": "配置管理",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "collection/overview",
+      "heading": "归集概览",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "collection/tasks",
+      "heading": "数据归集",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "collection/orders",
+      "heading": "归集工单",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "collection/registrations",
+      "heading": "登记审核",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "collection/imports",
+      "heading": "数据入库任务",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "collection/batches",
+      "heading": "数据批次",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "quality/models",
+      "heading": "质检模型与规则",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "quality/tasks",
+      "heading": "质检任务",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "quality/results",
+      "heading": "质检结果",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "quality/reports",
+      "heading": "数据质量报告",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "quality/orders",
+      "heading": "治理工单",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "catalog/systems",
+      "heading": "来源系统",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "catalog/sources",
+      "heading": "数源登记",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "catalog/directories",
+      "heading": "技术资产目录",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "catalog/assets",
+      "heading": "数据资产",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "catalog/relations",
+      "heading": "资产关系",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "standards/definitions",
+      "heading": "标准定义",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "standards/changes",
+      "heading": "标准变更记录",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "warehouse/domains",
+      "heading": "数据分域与数仓分层",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "warehouse/tables",
+      "heading": "库表设计",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "publishing/apis",
+      "heading": "数据接口",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "publishing/layers",
+      "heading": "图层服务登记",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "monitoring/overview",
+      "heading": "运行总览",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "monitoring/collection",
+      "heading": "归集监测",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "monitoring/calls",
+      "heading": "服务调用",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "monitoring/inspections",
+      "heading": "服务巡检",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "monitoring/rules",
+      "heading": "告警规则",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "route": "monitoring/alerts",
+      "heading": "运行监控",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "overview",
+      "heading": "工作台",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "todos",
+      "heading": "我的运营待办",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "settings",
+      "heading": "配置管理",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "collection/overview",
+      "heading": "归集概览",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "collection/tasks",
+      "heading": "数据归集",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "collection/orders",
+      "heading": "归集工单",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "collection/registrations",
+      "heading": "登记审核",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "collection/imports",
+      "heading": "数据入库任务",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "collection/batches",
+      "heading": "数据批次",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "quality/models",
+      "heading": "质检模型与规则",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "quality/tasks",
+      "heading": "质检任务",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "quality/results",
+      "heading": "质检结果",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "quality/reports",
+      "heading": "数据质量报告",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "quality/orders",
+      "heading": "治理工单",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "catalog/systems",
+      "heading": "来源系统",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "catalog/sources",
+      "heading": "数源登记",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "catalog/directories",
+      "heading": "技术资产目录",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "catalog/assets",
+      "heading": "数据资产",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "catalog/relations",
+      "heading": "资产关系",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "standards/definitions",
+      "heading": "标准定义",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "standards/changes",
+      "heading": "标准变更记录",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "warehouse/domains",
+      "heading": "数据分域与数仓分层",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "warehouse/tables",
+      "heading": "库表设计",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "publishing/apis",
+      "heading": "数据接口",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "publishing/layers",
+      "heading": "图层服务登记",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "monitoring/overview",
+      "heading": "运行总览",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "monitoring/collection",
+      "heading": "归集监测",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "monitoring/calls",
+      "heading": "服务调用",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "monitoring/inspections",
+      "heading": "服务巡检",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "monitoring/rules",
+      "heading": "告警规则",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "route": "monitoring/alerts",
+      "heading": "运行监控",
+      "menu": [
+        "工作台",
+        "数据归集",
+        "数据资产",
+        "运行监控",
+        "配置管理"
+      ],
+      "overflow": false
+    }
+  ],
+  "permissions": [
+    {
+      "heading": "暂无管理权限",
+      "menu": [],
+      "overflow": false
+    },
+    {
+      "heading": "我的运营待办",
+      "menu": [],
+      "overflow": false
+    }
+  ],
+  "browserErrors": ""
+}
