@@ -21,8 +21,8 @@
 | `prototype/frontend/results-workspace.js` | 一张图工作区、业务主题、工具与应用面板 | AI 面板入口、展开收起及业务上下文 |
 | `prototype/frontend/integration-map.js` | 地图实例、图层与选中对象、选区回调、对象定位 | 为助手提供上下文及独立结果图层接口 |
 | `prototype/frontend/map.js` | OpenLayers、GeoJSON、范围定位、分析要素展示 | 按查询 ID 管理结果图层，避免覆盖工具计算结果 |
-| `prototype/server.py`、`prototype/spatial.py` | 会话、身份、资源权限、部分空间上下文 | 地图问数专用接口与多轮查询状态 |
-| `prototype/capabilities.py` | 预设 SQL 模板、授权示例表、SQLite 只读查询 | 业务语义目录、查询计划编译、SQL 校验、真实数据适配 |
+| `prototype/server.py`、`prototype/backend/spatial.py` | 会话、身份、资源权限、部分空间上下文 | 地图问数专用接口与多轮查询状态 |
+| `prototype/backend/capabilities.py` | 预设 SQL 模板、授权示例表、SQLite 只读查询 | 业务语义目录、查询计划编译、SQL 校验、真实数据适配 |
 
 现有助手并非通用大模型，当前 SQL 能力是在内存 SQLite 中查询授权示例表。已有地图协同代码和文档可以参考，但不能视为自然语言生成空间 SQL 已经实现。此次入口位于一张图，不需要恢复此前撤下的独立智能中心地图页面。
 
@@ -101,7 +101,7 @@
 
 已在一张图现有地图内接入 AI 助手侧栏，不重建地图。查询、SQL 与参数依据、全量数量及登记面积、分组统计、每页 100 条表格与 GeoJSON、最多 5 个独立紫色图层、定位高亮、显隐移除、历史查询及下载本页已接通。手机绘制范围时侧栏缩为底部提示条，完成绘制后恢复。
 
-后端新增 `prototype/map_ai.py`；基于服务端当前授权地图的要素生成临时 SQLite 表，由受约束计划编译参数化 SQL。空间相交使用 SQL UDF 调用 Shapely，周边范围使用局部等距投影计算，执行前验证经纬度、拓扑和角色面积上限。统计、分页共享同一条件；历史读取、分页及导出重新校验权限和数据指纹。
+后端新增 `prototype/backend/map_ai.py`；基于服务端当前授权地图的要素生成临时 SQLite 表，由受约束计划编译参数化 SQL。空间相交使用 SQL UDF 调用 Shapely，周边范围使用局部等距投影计算，执行前验证经纬度、拓扑和角色面积上限。统计、分页共享同一条件；历史读取、分页及导出重新校验权限和数据指纹。
 
 接口均通过 `/api/action`：`integration.ai.ask/result/history/cancel`。目前是同步请求，无异步任务轮询、sessionId 或中途终止模型网络请求；前端「停止等待」防止迟到响应上图，返回后将记录标记取消。服务端按用户保存最近 50 条查询计划，最近查询入口最多展示 20 条；不持久化地图要素副本。历史恢复用于查看，后续提问按当前地图范围开始新一轮；当前会话的正常翻页保留追问条件。
 
