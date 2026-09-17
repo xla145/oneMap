@@ -106,6 +106,11 @@ export function createIntegration(ctx){
     generation++;workspaceUI.destroy();mapUI.destroy();
     if(route!==state.route){route=state.route;tab=route==='integration-settings'?'presentation':route==='integration-workbench'?'tasks':route==='integration-results'?'map':'';query='';kind='全部';theme='';department='';page=1;monitorData=null;}
     const isAdmin=state.mode==='admin',isManagement=route==='integration-settings';if(isManagement){const requested=new URLSearchParams(location.hash.split('?')[1]).get('tab')||'presentation';tab=[...adminTabs.map(x=>x[0]),'policy','auth'].includes(requested)?requested:'presentation';if(adminLocation!==location.hash){adminLocation=location.hash;query='';kind='全部';theme='';department='';page=1;monitorData=null;const resourceKind=new URLSearchParams(location.hash.split('?')[1]).get('filter');if(tab==='placement'&&['数据','服务','工具','知识','智能体','应用场景'].includes(resourceKind))kind=resourceKind;}}if(isAdmin&&!(isManagement?I().canManage:route==='integration-results'?I().resultPermissions?.view:I().internalAccess)){$('#main').innerHTML=empty('当前身份没有此工作空间的访问权限');return true;}
+    if(route==='integration-results'){
+      // Keep bookmarked admin routes usable without opening unsolicited tabs.
+      $('#main').innerHTML='<section class="panel ct-panel"><h1>一张图成果</h1><p>在独立页面中浏览地图、使用空间工具与业务场景。</p><a class="btn primary" href="/gis/index.html" target="_blank" rel="noopener noreferrer">在新标签页打开一张图</a></section>';
+      return true;
+    }
     if(!isManagement||tab==='placement'){const p=params();if(!isManagement)tab=p.get('tab')||(route==='integration-results'?'map':'');query=p.get('query')||'';kind=p.get('kind')||(isManagement?p.get('filter'):null)||'全部';theme=p.get('theme')||'';department=p.get('department')||'';page=Math.max(1,Number(p.get('page'))||1);}
     if(route==='integration-workbench'){
       const f={status:params().get('status')||(params().get('view')==='tasks'?'全部':I().preferences.todoStatus==='全部'?'待办':I().preferences.todoStatus),source:params().get('source')||'',query:params().get('query')||''};

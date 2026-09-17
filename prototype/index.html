@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="zh-CN">
   <head>
-    <!-- oneMap GIS default entry: preserve existing front/admin hash routes -->
+    <!-- Default to the public portal; preserve explicit GIS and front/admin routes. -->
     <script>
-      const gisEntryRoutes = ["", "#map", "#resources", "#tools", "#scenes", "#ai", "#tasks", "#operations"];
-      if (gisEntryRoutes.includes(location.hash)) location.replace("gis/index.html" + location.search + (location.hash || "#map"));
+      const gisEntryRoutes = ["#map", "#resources", "#tools", "#scenes", "#ai", "#tasks", "#operations"];
+      if (gisEntryRoutes.includes(location.hash)) location.replace("gis/index.html" + location.search + location.hash);
     </script>
 
     <meta charset="UTF-8" />
@@ -17,7 +17,7 @@
     />
     <link rel="stylesheet" href="/style.css?v=20260916-results-round2-final" />
     <link rel="stylesheet" href="/frontend/platform.css?v=20260916-results-round2-final" />
-    <script type="module" src="/app.js?v=20260917-operations-config1-tool-entry-nav-restore"></script>
+    <script type="module" src="/app.js?v=20260917-portal-map-entry-1"></script>
   <link rel="stylesheet" href="/frontend/vendor/openlayers.css?v=assistant-classic-v1" />
   <link rel="stylesheet" href="/frontend/improvements.css?v=assistant-classic-v1" />
     <link rel="stylesheet" href="/frontend/portal-blue.css?v=20260915-1" />
@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="/frontend/intelligence-admin.css?v=20260916-links" />
       <link rel="stylesheet" href="/frontend/operations-center.css?v=20260917-config1" />
     <link rel="stylesheet" href="/frontend/results-workspace.css?v=20260916-map-workspace-r7" />
-    <link rel="stylesheet" href="/frontend/admin-blue.css?v=20260916-admin-blue-v1" />
+    <link rel="stylesheet" href="/frontend/admin-blue.css?v=20260917-gis-tab-1" />
     <link rel="stylesheet" href="/frontend/map-ai.css?v=20260916-ai-map" />
     <link rel="stylesheet" href="gis/guide-assistant.css">
     <script defer src="gis/guide-assistant.js" data-map-entry="gis/index.html"></script>
