@@ -21,6 +21,28 @@ class MapAITest(unittest.TestCase):
         if op=='ask':p.setdefault('context',self.context)
         return execute(self.s,user or self.admin,'integration.ai.'+op,p)
 
+    def test_explicit_demo_mode_never_calls_model(self):
+        with patch.dict(os.environ,{'MAP_AI_PLANNER_URL':'https://planner.example/query'}), patch.object(ai,'build_opener') as gateway:
+            r=self.call(question='查询永久基本农田',mode='demo')
+            self.assertEqual(r['mode'],'演示规则模式')
+            self.assertGreater(r['total'],0)
+            gateway.assert_not_called()
+
+    def test_model_mode_requires_configuration_and_valid_mode(self):
+        self.assertFalse(self.call(op='capabilities')['modelConfigured'])
+        for mode in ['model','invalid']:
+            with self.subTest(mode=mode), self.assertRaises(cap.Invalid):
+                self.call(question='查询永久基本农田',mode=mode)
+        self.assertEqual(ai.store(self.s),[])
+
+    def test_scope_is_returned_for_map_and_followup(self):
+        polygon={'type':'Polygon','coordinates':[[[111.7,40.8],[111.701,40.8],[111.701,40.801],[111.7,40.8]]]}
+        r=self.call(question='查询范围内的建设用地',mode='demo',context={**self.context,'geometry':polygon})
+        self.assertEqual(r['scope']['type'],'Polygon')
+        next_result=self.call(question='按旗县统计',mode='demo',previousId=r['queryId'],context={**self.context,'geometry':r['scope']})
+        self.assertEqual(next_result['total'],r['total'])
+        self.assertEqual(sum(g['count'] for g in next_result['statistics']),r['total'])
+
     def test_real_sql_filter_and_units(self):
         r=self.call(question='查询呼和浩特市的永久基本农田')
         runtime,_,rows,_=ai.dataset(self.s,self.admin,self.context)

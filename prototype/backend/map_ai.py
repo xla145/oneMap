@@ -158,9 +158,13 @@ def local_plan(question,meta,previous):
 class NoRedirect(HTTPRedirectHandler):
     def redirect_request(self,*args,**kwargs):return None
 
-def model_plan(question,meta,previous):
+def model_plan(question,meta,previous,mode="auto"):
+    require(mode in ["auto","demo","model"],"问数模式无效")
+    if mode=="demo":return local_plan(question,meta,previous),"演示规则模式"
     url=os.environ.get('MAP_AI_PLANNER_URL','')
-    if not url:return local_plan(question,meta,previous),''
+    if not url:
+        require(mode!='model','尚未配置模型规划服务，请切换演示模式',503)
+        return local_plan(question,meta,previous),'演示规则模式'
     p=urlparse(url);require(p.scheme=='https' or (p.scheme=='http' and p.hostname in ['127.0.0.1','localhost']),'模型规划服务须使用 HTTPS 或本机 HTTP')
     require(not p.username and not p.password,'模型地址不能包含凭据')
     body=dict(question=question,schema=meta,previousPlan=previous,instruction='只返回符合 schema 的查询计划 JSON：filters、groupBy、sort；不能确定时返回 clarification。禁止生成 SQL。')
@@ -239,6 +243,7 @@ def own(s,u,key):
 
 def execute(s,u,op,p):
     require(ia.rights(s,u)['analyze'],'需要一张图空间分析权限',403)
+    if op=='capabilities':return dict(modelConfigured=bool(os.environ.get('MAP_AI_PLANNER_URL')), modes=['demo','model'])
     if op=='history':
         accessible=[]
         for r in reversed(store(s)):
@@ -264,7 +269,7 @@ def execute(s,u,op,p):
             require(old['context']['sceneId']==context['sceneId'],'地图场景已变化，请开启新对话')
             previous=old['plan'];valid_plan(previous,layers)
         meta=schema(layers,rows)
-        plan,mode=model_plan(q,meta,previous)
+        plan,mode=model_plan(q,meta,previous,p.get('mode','auto'))
         plan=valid_plan(plan,layers)
         if plan.get('clarification'):return dict(status='clarification',message=plan['clarification'],mode=mode)
         # A map-region selection applies unless the question explicitly supplies a region.
@@ -280,7 +285,7 @@ def execute(s,u,op,p):
     except sqlite3.Error:raise cap.Invalid('查询超时或空间数据无法计算，请缩小范围或检查源数据',422)
     if op=='ask':save_query(s,u,r)
     labels=[FIELDS[f['field']]+' '+{'eq':'=','in':'属于','gt':'>','gte':'>=','lt':'<','lte':'<=','contains':'包含'}[f['op']]+' '+str(f['value']) for f in r['plan']['filters']]
-    data.update(queryId=r['id'],status='completed',mode=r['mode'],question=r['question'],context=r['context'],interpretedFilters=labels,summary=f"基于演示数据，查询到 {data['total']} 个对象，登记面积合计 {data['areaHa']:.4f} 公顷。",warnings=['当前查询来自已授权地图场景的本地示例数据；不代表真实业务底数。','面积为对象登记属性之和，未做空间去重，也不是选区内裁剪面积。'],sources=[dict(id=l['id'],name=l['name']) for l in layers if any(x['layer_id']==l['id'] for x in data['rows'])])
+    data.update(scope=r['scope'],queryId=r['id'],status='completed',mode=r['mode'],question=r['question'],context=r['context'],interpretedFilters=labels,summary=f"基于演示数据，查询到 {data['total']} 个对象，登记面积合计 {data['areaHa']:.4f} 公顷。",warnings=['当前查询来自已授权地图场景的本地示例数据；不代表真实业务底数。','面积为对象登记属性之和，未做空间去重，也不是选区内裁剪面积。'],sources=[dict(id=l['id'],name=l['name']) for l in layers if any(x['layer_id']==l['id'] for x in data['rows'])])
     if data['areaKnown']<data['total']:data['warnings'].append(f"{data['total']-data['areaKnown']} 个对象没有可汇总的登记面积。")
     if data['loaded']<len(data['rows']):data['warnings'].append('部分对象没有可定位几何，仅在表格展示。')
     if data['total']>PAGE_SIZE:data['warnings'].append('地图仅显示当前页；总数和统计来自完整查询结果。')
