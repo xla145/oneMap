@@ -15,7 +15,7 @@ test('门户导航保留能力服务名称及原路由和别名',()=>{
 
 test('首页快捷入口与推荐区保留原有名称',()=>{
   assert.ok(portalSource.includes("['capabilities','常用工具','在线分析与量算','tool']"));
-  assert.ok(portalSource.includes("section('常用能力','从坐标到空间范围，直接开始使用。','capabilities')"));
+  assert.match(portalSource,/section\('常用能力','[^']*','capabilities'\)/);
   assert.equal(portalSource.includes("['capabilities','工具中心'"),false);
 });
 

@@ -9,7 +9,7 @@ import { createIntegration } from './frontend/integration.js?v=20260917-gis-tab-
 import { createCenters } from './frontend/centers.js?v=20260916-centers';
 import { createPortalOperations } from './frontend/portal-operations.js';
 import { createPortalAdmin } from './frontend/portal-admin.js?v=20260916-intelligence-links';
-import { createPublicPortal } from './frontend/public-portal.js?v=20260917-qa';
+import { createPublicPortal } from './frontend/public-portal.js?v=20260918-editorial';
 import { renderNews, newsCategory, newsCategories, searchNews, recommendedNews, newsDownloadText } from './frontend/news.js?v=20260915-1';
 import { previewSource } from './frontend/previews.js';
 import { randomUUID } from './frontend/uuid.js';
