@@ -10,3 +10,15 @@
 .assistant-trigger{position:absolute;right:20px;bottom:45px;z-index:720;background:var(--pine);color:#fff;border-radius:26px;padding:13px 17px;display:flex;align-items:center;gap:9px;box-shadow:0 5px 20px #19453525;font-size:12px}.assistant-trigger:hover{color:#fff;background:var(--pine-dark)}.assistant-trigger kbd{font-size:9px;font-family:inherit;opacity:.65;border:1px solid #ffffff40;padding:2px 4px;border-radius:3px}.assistant-dock{position:absolute;right:20px;top:65px;bottom:104px;z-index:710;width:354px;background:white;border:1px solid #c5d6c8;box-shadow:0 10px 40px #163e3425;border-radius:9px;display:flex;flex-direction:column;overflow:hidden}.assistant-dock .inspector-header{padding:19px 21px 15px}.assistant-dock h2{font-size:17px}.assistant-context{padding:11px 20px;background:#f0f5ed;color:#658166;font-size:10px;line-height:1.7;border-bottom:1px solid var(--line);max-height:70px;overflow:auto}.assistant-conversation{flex:1;min-height:0;overflow:auto;padding:0 20px 16px}.assistant-suggestions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:12px 0}.assistant-suggestions button{font-size:10px;border:1px solid #d7e3d3;border-radius:4px;padding:9px 7px;background:#f9fbf6;text-align:left}.assistant-dock .chat-composer textarea{min-height:75px}.has-results .assistant-trigger{bottom:286px}.has-results .assistant-dock{bottom:342px;top:19px;min-height:350px}.has-results .assistant-dock .assistant-suggestions{display:none}@media(max-width:680px){.assistant-trigger{bottom:43px;right:12px;font-size:11px;padding:11px 14px}.assistant-trigger kbd{display:none}.assistant-dock{left:12px;right:12px;width:auto;top:14px;bottom:95px}.has-results .assistant-trigger{bottom:43px}.has-results .assistant-dock{top:14px;bottom:95px;min-height:0}.has-results .assistant-dock .assistant-suggestions{display:grid}.assistant-context{font-size:9px}}
 
 @media(max-width:680px){.assistant-dock{z-index:1102}.assistant-trigger{z-index:1103}}
+
+
+/* SVG focus outlines use the rectangular bounding box; indicate focus on the geometry instead. */
+#map .leaflet-pane path.leaflet-interactive:focus {
+  outline: none;
+}
+#map .leaflet-pane path.leaflet-interactive:focus-visible {
+  outline: none;
+  stroke: #246b50;
+  stroke-width: 3px;
+  stroke-opacity: 1;
+}
